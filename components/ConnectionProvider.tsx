@@ -31,8 +31,12 @@ export default function ConnectionProvider({ children }: { children: React.React
   const connect = React.useCallback(() => {
     if (wsRef.current) return
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws'
-    const envUrl = (process.env.NEXT_PUBLIC_WS_URL as string) || ''
-    const wsUrl = envUrl ? envUrl : `${protocol}://localhost:8000/ws/opportunities`
+    
+    // Get backend URL and convert to WebSocket URL
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+    const wsBaseUrl = apiUrl.replace(/^http/, 'ws').replace(/^https/, 'wss')
+    
+    const wsUrl = `${wsBaseUrl}/ws/opportunities`
     const ws = new WebSocket(wsUrl)
     ws.onopen = () => setConnected(true)
     ws.onclose = () => {
@@ -54,7 +58,7 @@ export default function ConnectionProvider({ children }: { children: React.React
     wsRef.current = ws
     // also open hotcoins websocket (separate connection)
     try {
-      const hotUrl = envUrl ? envUrl.replace(/\/opportunities$/, '/hotcoins') : `${protocol}://localhost:8000/ws/hotcoins`
+      const hotUrl = `${wsBaseUrl}/ws/hotcoins`
       const hws = new WebSocket(hotUrl)
       hws.onopen = () => {}
       hws.onclose = () => { hotRef.current = null }
