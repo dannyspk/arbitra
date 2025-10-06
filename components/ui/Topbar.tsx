@@ -24,7 +24,7 @@ export default function Topbar() {
   const { connected, connect, disconnect } = useConnection()
   const { key, setKey } = useApiKey()
   const [notifEnabled, setNotifEnabled] = React.useState<boolean>(false)
-  const API = 'http://127.0.0.1:8000'
+  const API = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
 
   React.useEffect(() => {
     let mounted = true

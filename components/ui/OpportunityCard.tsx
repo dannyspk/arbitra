@@ -34,7 +34,8 @@ export default function OpportunityCard({ o }: { o: Opp }) {
       let apiKey: string | null = null
       try { apiKey = window.localStorage.getItem('arb:apiKey') } catch {}
       if (!apiKey) apiKey = 'demo-key'
-      const res = await fetch('http://localhost:8000/execute', {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+      const res = await fetch(`${API_URL}/execute`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', 'x-api-key': apiKey },
         body: JSON.stringify({ opportunity: o, amount: 0.01, dry_run: true }),
@@ -153,7 +154,8 @@ export default function OpportunityCard({ o }: { o: Opp }) {
                       body.allow_live = true
                       body.slippage = Number(slippage)
                     }
-                    const res = await fetch('http://localhost:8000/execute', {
+                    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+                    const res = await fetch(`${API_URL}/execute`, {
                       method: 'POST',
                       headers: { 'content-type': 'application/json', 'x-api-key': apiKey },
                       body: JSON.stringify(body),
