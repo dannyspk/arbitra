@@ -70,14 +70,7 @@ export default function DefiPage() {
   async function fetchVaults() {
     try {
       setLoading(true)
-      let backend = ''
-      try {
-        const hn = location.hostname
-        const p = location.port
-        if ((hn === 'localhost' || hn === '127.0.0.1') && p === '3000') {
-          backend = 'http://127.0.0.1:8000'
-        }
-      } catch (e) {}
+      const backend = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
       
       const res = await fetch(`${backend}/api/defi-vaults`)
       if (!res.ok) throw new Error('Failed to fetch')
