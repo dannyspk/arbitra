@@ -37,14 +37,7 @@ export default function PositionTracker() {
   const [availableVaults, setAvailableVaults] = useState<VaultInfo[]>([])
 
   const getBackendUrl = () => {
-    try {
-      const hn = location.hostname
-      const p = location.port
-      if ((hn === 'localhost' || hn === '127.0.0.1') && p === '3000') {
-        return 'http://127.0.0.1:8000'
-      }
-    } catch (e) {}
-    return ''
+    return process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
   }
 
   useEffect(() => {

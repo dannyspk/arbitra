@@ -86,15 +86,8 @@ export default function LiveDashboard() {
 
   const fetchDashboard = React.useCallback(async () => {
     try {
-      // Handle Next.js dev mode (port 3000 -> backend 8000)
-      let backend = ''
-      try {
-        const hn = location.hostname
-        const p = location.port
-        if ((hn === 'localhost' || hn === '127.0.0.1') && p === '3000') {
-          backend = 'http://127.0.0.1:8000'
-        }
-      } catch (e) {}
+      // Use environment variable for API URL
+      const backend = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
 
       const res = await fetch(`${backend}/api/dashboard`)
       if (!res.ok) throw new Error(`HTTP ${res.status}`)

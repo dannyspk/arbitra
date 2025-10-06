@@ -47,14 +47,7 @@ export default function SocialSentiment({ symbol }: SocialSentimentProps) {
         console.log('SocialSentiment: Fetching for symbol:', baseSymbol)
         
         // Call backend API which will use Santiment
-        let backend = ''
-        try {
-          const hn = location.hostname
-          const p = location.port
-          if ((hn === 'localhost' || hn === '127.0.0.1') && p === '3000') {
-            backend = 'http://127.0.0.1:8000'
-          }
-        } catch (e) {}
+        const backend = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
         
         const response = await fetch(`${backend}/api/social-sentiment/${baseSymbol}`)
         

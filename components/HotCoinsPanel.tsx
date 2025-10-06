@@ -6,21 +6,13 @@ import Link from 'next/link'
 function useHotCoins() {
   const [hot, setHot] = React.useState<any[]>([])
   React.useEffect(() => {
-    const proto = (location.protocol === 'https:') ? 'wss:' : 'ws:'
-    // Default to same-origin. In dev (Next on :3000, backend on :8000) fall
-    // back to connecting to localhost:8000 so the panel works without a proxy.
-    let host = location.host
-    try {
-      const hn = location.hostname
-      const p = location.port
-      if ((hn === 'localhost' || hn === '127.0.0.1') && p === '3000') {
-        host = hn + ':8000'
-      }
-    } catch (e) {
-      // ignore and use default
-    }
-    const url = proto + '//' + host + '/ws/hotcoins'
-    const ws = new WebSocket(url)
+    // Get backend URL from environment variable
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+    const url = new URL(apiUrl)
+    const proto = (url.protocol === 'https:') ? 'wss:' : 'ws:'
+    const wsUrl = `${proto}//${url.host}/ws/hotcoins`
+    
+    const ws = new WebSocket(wsUrl)
     ws.onmessage = (ev) => {
       try {
         const data = JSON.parse(ev.data)

@@ -33,14 +33,7 @@ export default function VaultAlertManager({ vaultId, vaultName, currentApy, onCl
   const [webhookUrl, setWebhookUrl] = useState('https://discord.com/api/webhooks/')
 
   const getBackendUrl = () => {
-    try {
-      const hn = location.hostname
-      const p = location.port
-      if ((hn === 'localhost' || hn === '127.0.0.1') && p === '3000') {
-        return 'http://127.0.0.1:8000'
-      }
-    } catch (e) {}
-    return ''
+    return process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
   }
 
   useEffect(() => {
