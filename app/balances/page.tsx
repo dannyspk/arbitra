@@ -19,11 +19,7 @@ export default function Page() {
     setLoading(true)
     setError(null)
     try {
-      // When running the frontend dev server (Next) it serves on a different
-      // origin and may return 404 for /api/* paths. Use explicit backend base
-      // when running locally so we contact the FastAPI server directly.
-      const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-      const base = isLocal ? 'http://127.0.0.1:8000' : ''
+      const base = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
       const [bRes, mRes] = await Promise.all([
         fetch(base + '/api/balances/binance'),
         fetch(base + '/api/balances/mexc'),

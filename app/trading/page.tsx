@@ -199,15 +199,7 @@ export default function TradingPage() {
     const notional = parseFloat(qty) || 10000
     setExecLoading(true); setExecResult(null)
     try {
-      // if running in Next dev (localhost:3000) the backend is on port 8000
-      let backend = ''
-      try {
-        const hn = location.hostname
-        const p = location.port
-        if ((hn === 'localhost' || hn === '127.0.0.1') && p === '3000') {
-          backend = 'http://127.0.0.1:8000'
-        }
-      } catch (e) {}
+      const backend = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
       const res = await fetch(`${backend}/api/preview-hedge`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -249,14 +241,7 @@ export default function TradingPage() {
     if (!symbol) return
     setAiLoading(true)
     try {
-      let backend = ''
-      try {
-        const hn = location.hostname
-        const p = location.port
-        if ((hn === 'localhost' || hn === '127.0.0.1') && p === '3000') {
-          backend = 'http://127.0.0.1:8000'
-        }
-      } catch (e) {}
+      const backend = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
       
       const res = await fetch(`${backend}/api/ai-analysis/${symbol}`)
       if (!res.ok) {
@@ -297,14 +282,7 @@ export default function TradingPage() {
     setStrategyLoading(true)
     setStrategyError(null)
     try {
-      let backend = ''
-      try {
-        const hn = location.hostname
-        const p = location.port
-        if ((hn === 'localhost' || hn === '127.0.0.1') && p === '3000') {
-          backend = 'http://127.0.0.1:8000'
-        }
-      } catch (e) {}
+      const backend = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
       
       const res = await fetch(`${backend}/api/live-strategy/start`, {
         method: 'POST',
@@ -331,14 +309,7 @@ export default function TradingPage() {
     setStrategyLoading(true)
     setStrategyError(null)
     try {
-      let backend = ''
-      try {
-        const hn = location.hostname
-        const p = location.port
-        if ((hn === 'localhost' || hn === '127.0.0.1') && p === '3000') {
-          backend = 'http://127.0.0.1:8000'
-        }
-      } catch (e) {}
+      const backend = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
       
       const res = await fetch(`${backend}/api/live-strategy/stop`, {
         method: 'POST',
@@ -362,14 +333,7 @@ export default function TradingPage() {
 
   async function checkStrategyStatus() {
     try {
-      let backend = ''
-      try {
-        const hn = location.hostname
-        const p = location.port
-        if ((hn === 'localhost' || hn === '127.0.0.1') && p === '3000') {
-          backend = 'http://127.0.0.1:8000'
-        }
-      } catch (e) {}
+      const backend = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
       
       const res = await fetch(`${backend}/api/live-strategy/status`)
       const data = await res.json()
@@ -1286,15 +1250,7 @@ async function executeTestInternal(body: any) {
 
 // call backend /api/live-check and return JSON
 async function runLiveCheckInternal(symbol?: string) {
-  // determine backend host for dev (Next dev on 3000 -> backend on 8000)
-  let backend = ''
-  try {
-    const hn = location.hostname
-    const p = location.port
-    if ((hn === 'localhost' || hn === '127.0.0.1') && p === '3000') {
-      backend = 'http://127.0.0.1:8000'
-    }
-  } catch (e) {}
+  const backend = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
   const url = `${backend}/api/live-check${symbol ? '?symbol=' + encodeURIComponent(symbol) : ''}`
   const res = await fetch(url, { method: 'GET', headers: { 'content-type': 'application/json' } })
   const data = await res.json()
