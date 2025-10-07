@@ -442,7 +442,7 @@ export default function WalletConnect({
           setShowModal(true)
           setError(null) // Clear any previous errors when opening modal
         }}
-        className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white pl-[1.05rem] pr-5 py-2.5 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2.5 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 hover:scale-[1.02]"
+        className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white pl-[1rem] pr-5 py-2.5 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2.5 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 hover:scale-[1.02]"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -456,7 +456,7 @@ export default function WalletConnect({
           <div className="bg-slate-800 rounded-xl border border-slate-700 max-w-md w-full p-6 relative z-[10000] my-auto shadow-2xl">
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-white">Connect Wallet</h2>
+              <h2 className="text-sm font-bold text-white">Connect Wallet</h2>
               <button
                 onClick={() => {
                   setShowModal(false)

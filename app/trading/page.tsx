@@ -53,10 +53,13 @@ export default function TradingPage() {
   const [liveCheckResult, setLiveCheckResult] = React.useState<any | null>(null)
   
   // Live strategy state
-  const [strategyRunning, setStrategyRunning] = React.useState(false)
+  const [activeStrategies, setActiveStrategies] = React.useState<Array<{symbol: string, mode: string, interval: string, running: boolean}>>([])
   const [strategyMode, setStrategyMode] = React.useState<'bear' | 'bull' | 'scalp' | 'range'>('bear')
   const [strategyLoading, setStrategyLoading] = React.useState(false)
   const [strategyError, setStrategyError] = React.useState<string | null>(null)
+  
+  // Check if current symbol has active strategy
+  const strategyRunning = activeStrategies.some(s => s.symbol === symbol)
 
   // AI Analysis state
   const [aiAnalysis, setAiAnalysis] = React.useState<any | null>(null)
@@ -287,16 +290,17 @@ export default function TradingPage() {
       const res = await fetch(`${backend}/api/live-strategy/start`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ symbol, mode: strategyMode })
+        body: JSON.stringify({ symbol, mode: strategyMode, interval: '1m' })
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.detail || JSON.stringify(data))
       
       if (data.started) {
-        setStrategyRunning(true)
         setStrategyError(null)
+        // Refresh strategy status
+        await checkStrategyStatus()
       } else {
-        setStrategyError(data.message || 'Failed to start strategy')
+        setStrategyError(data.reason || 'Failed to start strategy')
       }
     } catch (e: any) {
       setStrategyError(String(e))
@@ -313,16 +317,18 @@ export default function TradingPage() {
       
       const res = await fetch(`${backend}/api/live-strategy/stop`, {
         method: 'POST',
-        headers: { 'content-type': 'application/json' }
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ symbol })
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.detail || JSON.stringify(data))
       
       if (data.stopped) {
-        setStrategyRunning(false)
         setStrategyError(null)
+        // Refresh strategy status
+        await checkStrategyStatus()
       } else {
-        setStrategyError(data.message || 'Failed to stop strategy')
+        setStrategyError(data.reason || 'Failed to stop strategy')
       }
     } catch (e: any) {
       setStrategyError(String(e))
@@ -337,10 +343,12 @@ export default function TradingPage() {
       
       const res = await fetch(`${backend}/api/live-strategy/status`)
       const data = await res.json()
-      if (res.ok && data.running !== undefined) {
-        setStrategyRunning(data.running)
-        if (data.symbol) setSymbol(data.symbol)
-        if (data.mode) setStrategyMode(data.mode)
+      if (res.ok) {
+        if (data.running && data.strategies) {
+          setActiveStrategies(data.strategies)
+        } else {
+          setActiveStrategies([])
+        }
       }
     } catch (e) {
       // Silently fail status check
@@ -890,9 +898,187 @@ export default function TradingPage() {
                 </div>
               )}
 
+              {/* Active Strategies Overview */}
+              {activeStrategies.length > 0 && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wide">
+                      Active Strategies ({activeStrategies.length})
+                    </h4>
+                    <button
+                      onClick={async () => {
+                        if (confirm('Stop all active strategies?')) {
+                          setStrategyLoading(true)
+                          try {
+                            const backend = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+                            await fetch(`${backend}/api/live-strategy/stop`, { method: 'POST' })
+                            await checkStrategyStatus()
+                          } catch (e) {
+                            console.error(e)
+                          } finally {
+                            setStrategyLoading(false)
+                          }
+                        }
+                      }}
+                      className="text-xs px-3 py-1 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 transition-colors"
+                    >
+                      Stop All
+                    </button>
+                  </div>
+                  <div className="space-y-2">
+                    {activeStrategies.map((strat) => (
+                      <div
+                        key={strat.symbol}
+                        className={`p-3 rounded-lg border transition-all cursor-pointer ${
+                          strat.symbol === symbol
+                            ? 'bg-cyan-500/20 border-cyan-500/50 ring-2 ring-cyan-500/30'
+                            : 'bg-slate-800/50 border-slate-700/50 hover:border-slate-600/70 hover:bg-slate-800/70'
+                        }`}
+                        onClick={() => {
+                          setSymbol(strat.symbol)
+                          setStrategyMode(strat.mode as 'bear' | 'bull' | 'scalp' | 'range')
+                        }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 flex-1">
+                            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                            <span className="text-sm font-semibold text-white">{strat.symbol}</span>
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
+                              strat.mode === 'bear' ? 'bg-red-500/20 text-red-400' :
+                              strat.mode === 'bull' ? 'bg-green-500/20 text-green-400' :
+                              strat.mode === 'scalp' ? 'bg-cyan-500/20 text-cyan-400' :
+                              'bg-purple-500/20 text-purple-400'
+                            }`}>
+                              {strat.mode === 'bear' ? '🐻' : strat.mode === 'bull' ? '🐂' : strat.mode === 'scalp' ? '⚡' : '📊'} {strat.mode.toUpperCase()}
+                            </span>
+                            <span className="text-xs text-slate-400">{strat.interval}</span>
+                            {strat.symbol === symbol && (
+                              <span className="text-xs text-cyan-400 font-semibold ml-2">← Viewing</span>
+                            )}
+                          </div>
+                          <button
+                            onClick={async (e) => {
+                              e.stopPropagation() // Prevent triggering card click
+                              setStrategyLoading(true)
+                              try {
+                                const backend = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+                                await fetch(`${backend}/api/live-strategy/stop`, {
+                                  method: 'POST',
+                                  headers: { 'content-type': 'application/json' },
+                                  body: JSON.stringify({ symbol: strat.symbol })
+                                })
+                                await checkStrategyStatus()
+                              } catch (e) {
+                                console.error(e)
+                              } finally {
+                                setStrategyLoading(false)
+                              }
+                            }}
+                            className="text-xs px-2 py-1 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded text-red-400 transition-colors"
+                          >
+                            Stop
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="text-xs text-slate-400 bg-slate-800/30 rounded-lg p-2 border border-slate-700/30">
+                    💡 <strong>Tip:</strong> Click on any strategy card above to switch view and see its details
+                  </div>
+                </div>
+              )}
+
               {strategyRunning && (
-                <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-sm text-green-300">
-                  ✅ Strategy running on {symbol} in {strategyMode.toUpperCase()} mode
+                <div className="space-y-3">
+                  <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                        <span className="text-sm font-semibold text-green-300">Strategy Active</span>
+                      </div>
+                    </div>
+                    <div className="text-xs text-green-200 space-y-1">
+                      <p>📊 <strong>Symbol:</strong> {symbol}</p>
+                      <p>🎯 <strong>Mode:</strong> {strategyMode.toUpperCase()}</p>
+                      <p>⏱️ <strong>Polling:</strong> Every 15 seconds</p>
+                    </div>
+                  </div>
+                  
+                  {strategyMode === 'scalp' && (
+                    <div className="p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="text-xs font-semibold text-cyan-300">What's Happening Now</span>
+                      </div>
+                      <div className="text-xs text-cyan-200 space-y-2">
+                        <div className="space-y-1">
+                          <p className="flex items-start gap-1.5">
+                            <span className="text-cyan-400 mt-0.5">1.</span>
+                            <span><strong>Data Collection:</strong> Fetching 1-minute candles from Binance (needs 40+ bars)</span>
+                          </p>
+                          <p className="flex items-start gap-1.5">
+                            <span className="text-cyan-400 mt-0.5">2.</span>
+                            <span><strong>Calculating Indicators:</strong> 6-period SMA, volatility, momentum, support/resistance levels</span>
+                          </p>
+                          <p className="flex items-start gap-1.5">
+                            <span className="text-cyan-400 mt-0.5">3.</span>
+                            <span><strong>Monitoring Price:</strong> Watching for 1.2%+ deviation from SMA</span>
+                          </p>
+                          <p className="flex items-start gap-1.5">
+                            <span className="text-cyan-400 mt-0.5">4.</span>
+                            <span><strong>Applying Filters:</strong> Trend direction, momentum, SR levels must align</span>
+                          </p>
+                        </div>
+                        
+                        <div className="pt-2 border-t border-cyan-500/20 space-y-1">
+                          <p className="flex items-center gap-1.5 text-amber-300">
+                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                            </svg>
+                            <span><strong>No trades yet?</strong> Normal in calm markets!</span>
+                          </p>
+                          <p className="flex items-center gap-1.5 text-green-300">
+                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            <span><strong>Paper Trading:</strong> Safe simulation mode (no real funds)</span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {strategyMode === 'bear' && (
+                    <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                      <div className="text-xs text-red-200 space-y-1">
+                        <p><strong>🔍 Monitoring:</strong> Price spikes +5% (short entry) or drops -5/-10/-12% (long entries)</p>
+                        <p><strong>📈 Strategy:</strong> Counter-trend positions in bearish markets</p>
+                        <p className="text-amber-300 mt-2">💡 Trades execute when price hits thresholds</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {strategyMode === 'bull' && (
+                    <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                      <div className="text-xs text-green-200 space-y-1">
+                        <p><strong>🔍 Monitoring:</strong> Price dips -5% (long entry) or spikes +7/+12/+15% (short entries)</p>
+                        <p><strong>📈 Strategy:</strong> Trend-following positions in bullish markets</p>
+                        <p className="text-amber-300 mt-2">💡 Trades execute when price hits thresholds</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {strategyMode === 'range' && (
+                    <div className="p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg">
+                      <div className="text-xs text-purple-200 space-y-1">
+                        <p><strong>🔍 Monitoring:</strong> Bollinger Bands and pivot points to identify range boundaries</p>
+                        <p><strong>📈 Strategy:</strong> Buy near support, sell near resistance in sideways markets</p>
+                        <p className="text-amber-300 mt-2">💡 Best for low volatility, mean-reverting conditions</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
