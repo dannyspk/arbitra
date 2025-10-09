@@ -4,6 +4,8 @@ import React from 'react'
 import { useSearchParams } from 'next/navigation'
 import LiveDashboard from '../../components/LiveDashboard'
 import SocialSentiment from '../../components/SocialSentiment'
+import ManualTradingPanel from '../../components/ManualTradingPanel'
+import LiveManualTradingPanel from '../../components/LiveManualTradingPanel'
 
 function useHotWs() {
   const [hot, setHot] = React.useState<any[]>([])
@@ -58,6 +60,12 @@ export default function TradingPage() {
   const [strategyLoading, setStrategyLoading] = React.useState(false)
   const [strategyError, setStrategyError] = React.useState<string | null>(null)
   
+  // Toggle between Order Placement and Manual Trading Panel
+  const [isTestMode, setIsTestMode] = React.useState(false)
+  
+  // Tab state - 'trading', 'strategies', or 'orders'
+  const [activeTab, setActiveTab] = React.useState<'trading' | 'strategies' | 'orders'>('trading')
+  
   // Check if current symbol has active strategy
   const strategyRunning = activeStrategies.some(s => s.symbol === symbol)
 
@@ -75,6 +83,12 @@ export default function TradingPage() {
   // All Binance Futures symbols state
   const [allBinanceSymbols, setAllBinanceSymbols] = React.useState<string[]>([])
   const [binanceSymbolsLoading, setBinanceSymbolsLoading] = React.useState(false)
+
+  // Order History state
+  const [orders, setOrders] = React.useState<any[]>([])
+  const [ordersLoading, setOrdersLoading] = React.useState(false)
+  const [orderSymbolFilter, setOrderSymbolFilter] = React.useState<string>('')
+  const [orderLimit, setOrderLimit] = React.useState(100)
 
   React.useEffect(() => {
     setSymbol(initialSymbol)
@@ -513,7 +527,51 @@ export default function TradingPage() {
   return (
     <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 min-h-screen">
       <div className="p-4 md:p-6">
-        <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent ml-0 lg:ml-0">Trading</h2>
+        <h2 className="text-xl md:text-2xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent ml-0 lg:ml-0">Trading</h2>
+        
+        {/* Tab Navigation */}
+        <div className="mb-6">
+          <div className="flex gap-2 bg-slate-900/50 rounded-lg p-1 border border-slate-700/50 inline-flex">
+            <button
+              onClick={() => setActiveTab('trading')}
+              className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                activeTab === 'trading'
+                  ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/20'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+              }`}
+            >
+              📊 Trading
+            </button>
+            <button
+              onClick={() => setActiveTab('strategies')}
+              className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                activeTab === 'strategies'
+                  ? 'bg-gradient-to-r from-purple-600 to-violet-600 text-white shadow-lg shadow-purple-500/20'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+              }`}
+            >
+              ⚡ Strategies
+              {activeStrategies.length > 0 && (
+                <span className="ml-2 px-2 py-0.5 bg-green-400/20 text-green-400 rounded-full text-xs font-bold">
+                  {activeStrategies.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('orders')}
+              className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                activeTab === 'orders'
+                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/20'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+              }`}
+            >
+              📜 Order History
+            </button>
+          </div>
+        </div>
+
+        {/* Trading Tab Content */}
+        {activeTab === 'trading' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           <div className="lg:col-span-7 space-y-4">
             {/* TradingView Chart */}
@@ -540,17 +598,53 @@ export default function TradingPage() {
             {/* Order Placement Panel */}
             <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl md:rounded-2xl shadow-2xl border border-slate-700/50 overflow-visible">
               <div className="bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 backdrop-blur-sm border-b border-slate-700/50 px-4 md:px-6 py-3 md:py-4">
-                <h3 className="text-base md:text-lg font-semibold text-white flex items-center gap-2">
-                  <svg className="w-4 h-4 md:w-5 md:h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                  </svg>
-                  Order Placement
-                </h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base md:text-lg font-semibold text-white flex items-center gap-2">
+                    <svg className="w-4 h-4 md:w-5 md:h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                    {isTestMode ? 'Manual Trading Panel' : 'Order Placement'}
+                  </h3>
+                  
+                  {/* Test Mode Toggle */}
+                  <button
+                    onClick={() => setIsTestMode(!isTestMode)}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg font-medium text-xs transition-all duration-200 ${
+                      isTestMode 
+                        ? 'bg-gradient-to-r from-purple-600 to-purple-500 text-white shadow-lg shadow-purple-500/30' 
+                        : 'bg-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-700'
+                    }`}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    {isTestMode ? 'Test Mode' : 'Live Mode'}
+                  </button>
+                </div>
               </div>
               
-              <div className="p-4 md:p-6 space-y-4">
-                {/* Symbol & Market Selection */}
-                <div className="space-y-2">
+              {isTestMode ? (
+                // Manual Trading Panel (Paper Trading)
+                <div className="p-4 md:p-6">
+                  {symbol && asks.length > 0 ? (
+                    <ManualTradingPanel 
+                      symbol={symbol} 
+                      currentPrice={parseFloat(price) || parseFloat(asks[0][0])} 
+                    />
+                  ) : (
+                    <div className="text-center py-8 text-slate-400">
+                      <svg className="w-12 h-12 mx-auto mb-3 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <p className="text-sm">Select a symbol to start manual trading</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                // Live Mode - Symbol Selector + Manual Trading + Automated Strategies
+                <div className="p-4 md:p-6 space-y-6">
+                  {/* Symbol & Market Selection */}
+                  <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Trading Pair</label>
                     {/* Symbol count indicator */}
@@ -736,42 +830,25 @@ export default function TradingPage() {
                 </div>
               </div>
 
-              {/* Price & Quantity */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Price (USDT)</label>
-                  <input 
-                    className="w-full px-4 py-2.5 border border-slate-700 bg-slate-800/50 rounded-lg font-medium text-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50 transition"
-                    placeholder="0.00" 
-                    value={price} 
-                    onChange={(e) => setPrice(e.target.value)}
-                    type="number"
-                    step="0.01"
+              {/* Live Manual Trading Panel */}
+              <div className="mb-6">
+                {symbol && asks.length > 0 ? (
+                  <LiveManualTradingPanel 
+                    symbol={symbol} 
+                    currentPrice={parseFloat(price) || parseFloat(asks[0][0])} 
                   />
-                  {asks.length > 0 && (
-                    <div className="text-xs text-slate-400">
-                      Best Ask: <span className="font-semibold text-red-400">{asks[0][0]}</span>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Quantity</label>
-                  <input 
-                    className="w-full px-4 py-2.5 border border-slate-700 bg-slate-800/50 rounded-lg font-medium text-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50 transition"
-                    placeholder="0.00" 
-                    value={qty} 
-                    onChange={(e) => setQty(e.target.value)}
-                    type="number"
-                    step="0.001"
-                  />
-                  {bids.length > 0 && (
-                    <div className="text-xs text-slate-400">
-                      Best Bid: <span className="font-semibold text-green-400">{bids[0][0]}</span>
-                    </div>
-                  )}
-                </div>
+                ) : (
+                  <div className="text-center py-8 text-slate-400 bg-slate-800/30 rounded-2xl border border-slate-700/50">
+                    <svg className="w-12 h-12 mx-auto mb-3 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p className="text-sm">Select a symbol above to start LIVE manual trading</p>
+                  </div>
+                )}
               </div>
+
+              {/* Divider */}
+              
 
               {/* Estimated Total */}
               {price && qty && (
@@ -784,322 +861,24 @@ export default function TradingPage() {
                   </div>
                 </div>
               )}
+                </div>
+              )}
+            </div>
 
-              {/* Action Button */}
-              <div className="pt-2">
-                <button 
-                  className="w-full px-4 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-lg shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed text-medium"
-                  onClick={() => executeTest(false)}
-                  disabled={!symbol}
-                >
-                  Execute Live Order
-                </button>
-              </div>
+            {/* Positions & Stats Dashboard */}
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 p-6">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                {isTestMode ? 'Test Trading Dashboard' : 'Active Positions'}
+              </h3>
+              {/* Always use LiveDashboard but control with isLiveMode prop */}
+              {/* In Test Mode: Shows test balance and test positions only */}
+              {/* In Live Mode: Shows live Binance balance and live positions only */}
+              <LiveDashboard isLiveMode={!isTestMode} hideSignals={true} />
             </div>
           </div>
-
-          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 p-6 mb-4">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              Live Strategy Control
-            </h3>
-            {!symbol && (
-              <div className="mb-4 p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-lg text-sm text-cyan-300">
-                💡 <strong>First step:</strong> Select a symbol from the Order Entry dropdown above to enable strategy controls
-              </div>
-            )}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <div className="flex-1">
-                  <label className="text-xs text-slate-400 block mb-1">Strategy Type</label>
-                  <div className="flex gap-1 bg-slate-800/50 rounded-lg p-1 border border-slate-700">
-                    <button 
-                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                        strategyMode === 'bear' 
-                          ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg shadow-red-500/20' 
-                          : 'bg-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-700'
-                      }`}
-                      onClick={() => setStrategyMode('bear')}
-                      disabled={strategyRunning}
-                    >
-                      🐻 Bear
-                    </button>
-                    <button 
-                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                        strategyMode === 'bull' 
-                          ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/20' 
-                          : 'bg-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-700'
-                      }`}
-                      onClick={() => setStrategyMode('bull')}
-                      disabled={strategyRunning}
-                    >
-                      🐂 Bull
-                    </button>
-                    <button 
-                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                        strategyMode === 'scalp' 
-                          ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/20' 
-                          : 'bg-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-700'
-                      }`}
-                      onClick={() => setStrategyMode('scalp')}
-                      disabled={strategyRunning}
-                    >
-                      ⚡ Scalp
-                    </button>
-                    <button 
-                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                        strategyMode === 'range' 
-                          ? 'bg-gradient-to-r from-purple-600 to-violet-600 text-white shadow-lg shadow-purple-500/20' 
-                          : 'bg-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-700'
-                      }`}
-                      onClick={() => setStrategyMode('range')}
-                      disabled={strategyRunning}
-                    >
-                      📊 Range
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="text-xs text-slate-400 block mb-1">Selected Symbol</label>
-                <div className={`px-3 py-2 rounded-lg border font-medium ${
-                  symbol ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300' : 'bg-slate-800/50 border-slate-700 text-slate-500'
-                }`}>
-                  {symbol || '← Select symbol from Order Entry dropdown above'}
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                {!strategyRunning ? (
-                  <button 
-                    className="flex-1 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-lg font-medium shadow-lg shadow-green-500/20 hover:shadow-green-500/40 disabled:from-slate-700 disabled:to-slate-700 disabled:cursor-not-allowed disabled:shadow-none transition-all"
-                    onClick={startStrategy}
-                    disabled={strategyLoading || !symbol}
-                  >
-                    {strategyLoading ? '⏳ Starting...' : '▶️ Start Strategy'}
-                  </button>
-                ) : (
-                  <button 
-                    className="flex-1 px-4 py-2 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white rounded-lg font-medium shadow-lg shadow-red-500/20 hover:shadow-red-500/40 disabled:from-slate-700 disabled:to-slate-700 disabled:cursor-not-allowed disabled:shadow-none transition-all"
-                    onClick={stopStrategy}
-                    disabled={strategyLoading}
-                  >
-                    {strategyLoading ? '⏳ Stopping...' : '⏹️ Stop Strategy'}
-                  </button>
-                )}
-              </div>
-
-              {strategyError && (
-                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-red-300">
-                  ⚠️ {strategyError}
-                </div>
-              )}
-
-              {/* Active Strategies Overview */}
-              {activeStrategies.length > 0 && (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wide">
-                      Active Strategies ({activeStrategies.length})
-                    </h4>
-                    <button
-                      onClick={async () => {
-                        if (confirm('Stop all active strategies?')) {
-                          setStrategyLoading(true)
-                          try {
-                            const backend = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
-                            await fetch(`${backend}/api/live-strategy/stop`, { method: 'POST' })
-                            await checkStrategyStatus()
-                          } catch (e) {
-                            console.error(e)
-                          } finally {
-                            setStrategyLoading(false)
-                          }
-                        }
-                      }}
-                      className="text-xs px-3 py-1 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 transition-colors"
-                    >
-                      Stop All
-                    </button>
-                  </div>
-                  <div className="space-y-2">
-                    {activeStrategies.map((strat) => (
-                      <div
-                        key={strat.symbol}
-                        className={`p-3 rounded-lg border transition-all cursor-pointer ${
-                          strat.symbol === symbol
-                            ? 'bg-cyan-500/20 border-cyan-500/50 ring-2 ring-cyan-500/30'
-                            : 'bg-slate-800/50 border-slate-700/50 hover:border-slate-600/70 hover:bg-slate-800/70'
-                        }`}
-                        onClick={() => {
-                          setSymbol(strat.symbol)
-                          setStrategyMode(strat.mode as 'bear' | 'bull' | 'scalp' | 'range')
-                        }}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 flex-1">
-                            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                            <span className="text-sm font-semibold text-white">{strat.symbol}</span>
-                            <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
-                              strat.mode === 'bear' ? 'bg-red-500/20 text-red-400' :
-                              strat.mode === 'bull' ? 'bg-green-500/20 text-green-400' :
-                              strat.mode === 'scalp' ? 'bg-cyan-500/20 text-cyan-400' :
-                              'bg-purple-500/20 text-purple-400'
-                            }`}>
-                              {strat.mode === 'bear' ? '🐻' : strat.mode === 'bull' ? '🐂' : strat.mode === 'scalp' ? '⚡' : '📊'} {strat.mode.toUpperCase()}
-                            </span>
-                            <span className="text-xs text-slate-400">{strat.interval}</span>
-                            {strat.symbol === symbol && (
-                              <span className="text-xs text-cyan-400 font-semibold ml-2">← Viewing</span>
-                            )}
-                          </div>
-                          <button
-                            onClick={async (e) => {
-                              e.stopPropagation() // Prevent triggering card click
-                              setStrategyLoading(true)
-                              try {
-                                const backend = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
-                                await fetch(`${backend}/api/live-strategy/stop`, {
-                                  method: 'POST',
-                                  headers: { 'content-type': 'application/json' },
-                                  body: JSON.stringify({ symbol: strat.symbol })
-                                })
-                                await checkStrategyStatus()
-                              } catch (e) {
-                                console.error(e)
-                              } finally {
-                                setStrategyLoading(false)
-                              }
-                            }}
-                            className="text-xs px-2 py-1 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded text-red-400 transition-colors"
-                          >
-                            Stop
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="text-xs text-slate-400 bg-slate-800/30 rounded-lg p-2 border border-slate-700/30">
-                    💡 <strong>Tip:</strong> Click on any strategy card above to switch view and see its details
-                  </div>
-                </div>
-              )}
-
-              {strategyRunning && (
-                <div className="space-y-3">
-                  <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                        <span className="text-sm font-semibold text-green-300">Strategy Active</span>
-                      </div>
-                    </div>
-                    <div className="text-xs text-green-200 space-y-1">
-                      <p>📊 <strong>Symbol:</strong> {symbol}</p>
-                      <p>🎯 <strong>Mode:</strong> {strategyMode.toUpperCase()}</p>
-                      <p>⏱️ <strong>Polling:</strong> Every 15 seconds</p>
-                    </div>
-                  </div>
-                  
-                  {strategyMode === 'scalp' && (
-                    <div className="p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
-                      <div className="flex items-center gap-2 mb-2">
-                        <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span className="text-xs font-semibold text-cyan-300">What's Happening Now</span>
-                      </div>
-                      <div className="text-xs text-cyan-200 space-y-2">
-                        <div className="space-y-1">
-                          <p className="flex items-start gap-1.5">
-                            <span className="text-cyan-400 mt-0.5">1.</span>
-                            <span><strong>Data Collection:</strong> Fetching 1-minute candles from Binance (needs 40+ bars)</span>
-                          </p>
-                          <p className="flex items-start gap-1.5">
-                            <span className="text-cyan-400 mt-0.5">2.</span>
-                            <span><strong>Calculating Indicators:</strong> 6-period SMA, volatility, momentum, support/resistance levels</span>
-                          </p>
-                          <p className="flex items-start gap-1.5">
-                            <span className="text-cyan-400 mt-0.5">3.</span>
-                            <span><strong>Monitoring Price:</strong> Watching for 1.2%+ deviation from SMA</span>
-                          </p>
-                          <p className="flex items-start gap-1.5">
-                            <span className="text-cyan-400 mt-0.5">4.</span>
-                            <span><strong>Applying Filters:</strong> Trend direction, momentum, SR levels must align</span>
-                          </p>
-                        </div>
-                        
-                        <div className="pt-2 border-t border-cyan-500/20 space-y-1">
-                          <p className="flex items-center gap-1.5 text-amber-300">
-                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                            </svg>
-                            <span><strong>No trades yet?</strong> Normal in calm markets!</span>
-                          </p>
-                          <p className="flex items-center gap-1.5 text-green-300">
-                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                            <span><strong>Paper Trading:</strong> Safe simulation mode (no real funds)</span>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {strategyMode === 'bear' && (
-                    <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
-                      <div className="text-xs text-red-200 space-y-1">
-                        <p><strong>🔍 Monitoring:</strong> Price spikes +5% (short entry) or drops -5/-10/-12% (long entries)</p>
-                        <p><strong>📈 Strategy:</strong> Counter-trend positions in bearish markets</p>
-                        <p className="text-amber-300 mt-2">💡 Trades execute when price hits thresholds</p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {strategyMode === 'bull' && (
-                    <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
-                      <div className="text-xs text-green-200 space-y-1">
-                        <p><strong>🔍 Monitoring:</strong> Price dips -5% (long entry) or spikes +7/+12/+15% (short entries)</p>
-                        <p><strong>📈 Strategy:</strong> Trend-following positions in bullish markets</p>
-                        <p className="text-amber-300 mt-2">💡 Trades execute when price hits thresholds</p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {strategyMode === 'range' && (
-                    <div className="p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg">
-                      <div className="text-xs text-purple-200 space-y-1">
-                        <p><strong>🔍 Monitoring:</strong> Bollinger Bands and pivot points to identify range boundaries</p>
-                        <p><strong>📈 Strategy:</strong> Buy near support, sell near resistance in sideways markets</p>
-                        <p className="text-amber-300 mt-2">💡 Best for low volatility, mean-reverting conditions</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              <div className="text-xs text-slate-400 space-y-1 bg-slate-800/30 rounded-lg p-3 border border-slate-700/30">
-                <p><strong className="text-slate-300">🐻 Bear Strategy:</strong> Short on quick pumps (+5%), long on deep oversold (-5/-10/-12%)</p>
-                <p><strong className="text-slate-300">🐂 Bull Strategy:</strong> Long on quick dips (-5%), short on overbought (+7/+12/+15%)</p>
-                <p><strong className="text-slate-300">⚡ Scalp Strategy:</strong> Quick entries on 1.2% SMA deviation, targets 2.5% profit (1.5% partial), 1.5% stop, max 2h hold</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 p-6">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              Live Strategy Dashboard
-            </h3>
-            <LiveDashboard />
-          </div>
-        </div>
 
         <div className="lg:col-span-5 space-y-4">
           <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl md:rounded-2xl shadow-2xl border border-slate-700/50 p-4 md:p-6">
@@ -1417,8 +1196,396 @@ export default function TradingPage() {
           </div>
         </div>
       </div>
+        )}
+
+        {/* Strategies Tab Content */}
+        {activeTab === 'strategies' && (
+          <div className="space-y-6">
+            {/* Live Strategy Dashboard */}
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 p-6">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                {isTestMode ? 'Test Trading Dashboard' : 'Live Strategy Dashboard'}
+              </h3>
+              {/* Always use LiveDashboard but control with isLiveMode prop */}
+              {/* In Test Mode: Shows test balance and test positions only */}
+              {/* In Live Mode: Shows live Binance balance and live positions only */}
+              <LiveDashboard isLiveMode={!isTestMode} />
+            </div>
+
+            {/* Live Strategy Control */}
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 p-6">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                Live Strategy Control
+              </h3>
+              
+              {!symbol ? (
+                <div className="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg text-sm text-cyan-300">
+                  💡 <strong>First step:</strong> Switch to the Trading tab and select a symbol from the dropdown to enable strategy controls
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {/* Strategy Type Selection */}
+                  <div>
+                    <label className="text-sm text-slate-400 block mb-2">Strategy Type</label>
+                    <div className="grid grid-cols-4 gap-2">
+                      <button 
+                        className={`px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                          strategyMode === 'bear' 
+                            ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg shadow-red-500/20' 
+                            : 'bg-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-700'
+                        }`}
+                        onClick={() => setStrategyMode('bear')}
+                        disabled={strategyRunning}
+                      >
+                        🐻 Bear
+                      </button>
+                      <button 
+                        className={`px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                          strategyMode === 'bull' 
+                            ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/20' 
+                            : 'bg-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-700'
+                        }`}
+                        onClick={() => setStrategyMode('bull')}
+                        disabled={strategyRunning}
+                      >
+                        🐂 Bull
+                      </button>
+                      <button 
+                        className={`px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                          strategyMode === 'scalp' 
+                            ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/20' 
+                            : 'bg-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-700'
+                        }`}
+                        onClick={() => setStrategyMode('scalp')}
+                        disabled={strategyRunning}
+                      >
+                        ⚡ Scalp
+                      </button>
+                      <button 
+                        className={`px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                          strategyMode === 'range' 
+                            ? 'bg-gradient-to-r from-purple-600 to-violet-600 text-white shadow-lg shadow-purple-500/20' 
+                            : 'bg-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-700'
+                        }`}
+                        onClick={() => setStrategyMode('range')}
+                        disabled={strategyRunning}
+                      >
+                        📊 Range
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Selected Symbol */}
+                  <div>
+                    <label className="text-sm text-slate-400 block mb-2">Selected Symbol</label>
+                    <div className="px-4 py-3 rounded-lg border bg-cyan-500/10 border-cyan-500/30 text-cyan-300 font-semibold">
+                      {symbol}
+                    </div>
+                  </div>
+
+                  {/* Start/Stop Strategy */}
+                  <div className="flex gap-3">
+                    {!strategyRunning ? (
+                      <button 
+                        className="flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-lg font-semibold shadow-lg shadow-green-500/20 hover:shadow-green-500/40 disabled:from-slate-700 disabled:to-slate-700 disabled:cursor-not-allowed disabled:shadow-none transition-all"
+                        onClick={startStrategy}
+                        disabled={strategyLoading}
+                      >
+                        {strategyLoading ? '⏳ Starting...' : '▶️ Start Strategy'}
+                      </button>
+                    ) : (
+                      <button 
+                        className="flex-1 px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white rounded-lg font-semibold shadow-lg shadow-red-500/20 hover:shadow-red-500/40 disabled:from-slate-700 disabled:to-slate-700 disabled:cursor-not-allowed disabled:shadow-none transition-all"
+                        onClick={stopStrategy}
+                        disabled={strategyLoading}
+                      >
+                        {strategyLoading ? '⏳ Stopping...' : '⏹️ Stop Strategy'}
+                      </button>
+                    )}
+                  </div>
+
+                  {strategyError && (
+                    <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-red-300">
+                      ⚠️ {strategyError}
+                    </div>
+                  )}
+
+                  {/* Strategy Info Boxes */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-3">
+                      <div className="text-xs text-red-400 font-semibold mb-1">🐻 BEAR</div>
+                      <div className="text-xs text-slate-300">Short pumps (+5%), long oversold (-5/-10/-12%)</div>
+                    </div>
+                    <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-3">
+                      <div className="text-xs text-green-400 font-semibold mb-1">🐂 BULL</div>
+                      <div className="text-xs text-slate-300">Long dips (-5%), short overbought (+7/+12/+15%)</div>
+                    </div>
+                    <div className="bg-cyan-900/20 border border-cyan-500/30 rounded-lg p-3">
+                      <div className="text-xs text-cyan-400 font-semibold mb-1">⚡ SCALP</div>
+                      <div className="text-xs text-slate-300">1.2% SMA deviation, 2.5% target, 1.5% stop</div>
+                    </div>
+                    <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3">
+                      <div className="text-xs text-purple-400 font-semibold mb-1">📊 RANGE</div>
+                      <div className="text-xs text-slate-300">Buy support, sell resistance, sideways markets</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Active Strategies */}
+            {activeStrategies.length > 0 && (
+              <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    Active Strategies ({activeStrategies.length})
+                  </h3>
+                  <button
+                    onClick={async () => {
+                      if (confirm('Stop all active strategies?')) {
+                        setStrategyLoading(true)
+                        try {
+                          const backend = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+                          await fetch(`${backend}/api/live-strategy/stop`, { method: 'POST' })
+                          await checkStrategyStatus()
+                        } catch (e) {
+                          console.error(e)
+                        } finally {
+                          setStrategyLoading(false)
+                        }
+                      }
+                    }}
+                    className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 font-semibold transition-colors"
+                  >
+                    ⏹️ Stop All
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {activeStrategies.map((strat) => (
+                    <div
+                      key={strat.symbol}
+                      className={`p-4 rounded-lg border transition-all cursor-pointer ${
+                        strat.symbol === symbol
+                          ? 'bg-cyan-500/20 border-cyan-500/50 ring-2 ring-cyan-500/30'
+                          : 'bg-slate-800/50 border-slate-700/50 hover:border-slate-600/70 hover:bg-slate-800/70'
+                      }`}
+                      onClick={() => {
+                        setSymbol(strat.symbol)
+                        setStrategyMode(strat.mode as 'bear' | 'bull' | 'scalp' | 'range')
+                        setActiveTab('trading')
+                      }}
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                          <span className="text-base font-bold text-white">{strat.symbol}</span>
+                        </div>
+                        <span className={`text-xs px-2 py-1 rounded-full font-semibold ${
+                          strat.mode === 'bear' ? 'bg-red-500/20 text-red-400' :
+                          strat.mode === 'bull' ? 'bg-green-500/20 text-green-400' :
+                          strat.mode === 'scalp' ? 'bg-cyan-500/20 text-cyan-400' :
+                          'bg-purple-500/20 text-purple-400'
+                        }`}>
+                          {strat.mode === 'bear' ? '🐻' : strat.mode === 'bull' ? '🐂' : strat.mode === 'scalp' ? '⚡' : '📊'} {strat.mode.toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="text-xs text-slate-400 mb-3">{strat.interval}</div>
+                      <button
+                        onClick={async (e) => {
+                          e.stopPropagation()
+                          setStrategyLoading(true)
+                          try {
+                            const backend = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+                            await fetch(`${backend}/api/live-strategy/stop`, {
+                              method: 'POST',
+                              headers: { 'content-type': 'application/json' },
+                              body: JSON.stringify({ symbol: strat.symbol })
+                            })
+                            await checkStrategyStatus()
+                          } catch (e) {
+                            console.error(e)
+                          } finally {
+                            setStrategyLoading(false)
+                          }
+                        }}
+                        className="w-full px-3 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded text-red-400 text-xs font-semibold transition-colors"
+                      >
+                        ⏹️ Stop
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="mt-4 text-xs text-slate-400 bg-slate-800/30 rounded-lg p-3 border border-slate-700/30">
+                  💡 <strong>Tip:</strong> Click on any strategy card to view it in the Trading tab
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Order History Tab Content */}
+        {activeTab === 'orders' && (
+          <div className="space-y-6">
+            {/* Order History Header */}
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  📜 Order History
+                </h3>
+                <button
+                  onClick={async () => {
+                    setOrdersLoading(true)
+                    try {
+                      const backend = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+                      const params = new URLSearchParams()
+                      if (orderSymbolFilter) params.append('symbol', orderSymbolFilter)
+                      params.append('limit', orderLimit.toString())
+                      
+                      const response = await fetch(`${backend}/api/binance/order-history?${params}`)
+                      const data = await response.json()
+                      
+                      if (data.success) {
+                        setOrders(data.orders)
+                      } else {
+                        console.error('Failed to fetch orders:', data.error)
+                      }
+                    } catch (error) {
+                      console.error('Error fetching orders:', error)
+                    } finally {
+                      setOrdersLoading(false)
+                    }
+                  }}
+                  disabled={ordersLoading}
+                  className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {ordersLoading ? '⏳ Loading...' : '🔄 Refresh'}
+                </button>
+              </div>
+
+              {/* Filters */}
+              <div className="flex gap-4 mb-4">
+                <div className="flex-1">
+                  <label className="block text-xs font-semibold text-slate-400 mb-2">Filter by Symbol</label>
+                  <input
+                    type="text"
+                    value={orderSymbolFilter}
+                    onChange={(e) => setOrderSymbolFilter(e.target.value.toUpperCase())}
+                    placeholder="e.g., MYXUSDT (leave empty for all)"
+                    className="w-full px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 mb-2">Limit</label>
+                  <select
+                    value={orderLimit}
+                    onChange={(e) => setOrderLimit(Number(e.target.value))}
+                    className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white focus:outline-none focus:border-cyan-500/50"
+                  >
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                    <option value={200}>200</option>
+                    <option value={500}>500</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Orders Table */}
+              {ordersLoading ? (
+                <div className="text-center py-12">
+                  <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400"></div>
+                  <p className="mt-4 text-slate-400">Loading orders...</p>
+                </div>
+              ) : orders.length === 0 ? (
+                <div className="text-center py-12 text-slate-400">
+                  <p className="text-lg">📭 No orders found</p>
+                  <p className="text-sm mt-2">Click Refresh to load order history</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-700/50">
+                        <th className="text-left py-3 px-4 text-slate-400 font-semibold">Time</th>
+                        <th className="text-left py-3 px-4 text-slate-400 font-semibold">Symbol</th>
+                        <th className="text-left py-3 px-4 text-slate-400 font-semibold">Side</th>
+                        <th className="text-left py-3 px-4 text-slate-400 font-semibold">Type</th>
+                        <th className="text-right py-3 px-4 text-slate-400 font-semibold">Price</th>
+                        <th className="text-right py-3 px-4 text-slate-400 font-semibold">Amount</th>
+                        <th className="text-right py-3 px-4 text-slate-400 font-semibold">Filled</th>
+                        <th className="text-left py-3 px-4 text-slate-400 font-semibold">Status</th>
+                        <th className="text-right py-3 px-4 text-slate-400 font-semibold">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {orders.map((order, idx) => (
+                        <tr key={order.id || idx} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+                          <td className="py-3 px-4 text-slate-300 text-xs">
+                            {order.datetime ? new Date(order.datetime).toLocaleString() : '-'}
+                          </td>
+                          <td className="py-3 px-4 text-white font-medium">{order.symbol}</td>
+                          <td className="py-3 px-4">
+                            <span className={`px-2 py-1 rounded text-xs font-bold ${
+                              order.side === 'buy' 
+                                ? 'bg-green-400/20 text-green-400' 
+                                : 'bg-red-400/20 text-red-400'
+                            }`}>
+                              {order.side?.toUpperCase()}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-slate-300 uppercase text-xs">{order.type}</td>
+                          <td className="py-3 px-4 text-right text-slate-300">
+                            ${order.average || order.price || 0}
+                          </td>
+                          <td className="py-3 px-4 text-right text-slate-300">{order.amount || 0}</td>
+                          <td className="py-3 px-4 text-right text-slate-300">{order.filled || 0}</td>
+                          <td className="py-3 px-4">
+                            <span className={`px-2 py-1 rounded text-xs font-bold ${
+                              order.status === 'closed' || order.status === 'filled'
+                                ? 'bg-green-400/20 text-green-400'
+                                : order.status === 'canceled'
+                                ? 'bg-slate-400/20 text-slate-400'
+                                : order.status === 'open'
+                                ? 'bg-blue-400/20 text-blue-400'
+                                : 'bg-yellow-400/20 text-yellow-400'
+                            }`}>
+                              {order.status?.toUpperCase()}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-right text-white font-medium">
+                            ${(order.cost || 0).toFixed(2)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* Summary */}
+              {orders.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-slate-700/50 flex justify-between items-center text-sm">
+                  <span className="text-slate-400">
+                    Showing {orders.length} order{orders.length !== 1 ? 's' : ''}
+                  </span>
+                  <span className="text-slate-400">
+                    Total Volume: ${orders.reduce((sum, o) => sum + (o.cost || 0), 0).toFixed(2)}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
-  </div>
   )
 }
 
