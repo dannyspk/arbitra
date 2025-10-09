@@ -2,5 +2,8 @@
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
-  "rewrites": []
+  "rewrites": [],
+  "env": {
+    "NEXT_PUBLIC_API_URL": "https://arbitra-backend.vercel.app"
+  }
 }
