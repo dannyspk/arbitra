@@ -4,6 +4,6 @@
   "framework": "nextjs",
   "rewrites": [],
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://arbitra-backend.vercel.app"
+    "NEXT_PUBLIC_API_URL": "https://arbitra-backend-production.up.railway.app"
   }
 }
