@@ -94,20 +94,63 @@ function formatTime(ts?: number) {
 interface LiveDashboardProps {
   isLiveMode?: boolean
   hideSignals?: boolean
+  hideHeader?: boolean
+  sharedWsData?: any // Allow passing WebSocket data from parent to avoid multiple connections
 }
 
-export default function LiveDashboard({ isLiveMode = false, hideSignals = false }: LiveDashboardProps) {
+export default function LiveDashboard({ isLiveMode = false, hideSignals = false, hideHeader = false, sharedWsData }: LiveDashboardProps) {
   const [data, setData] = React.useState<DashboardData | null>(null)
-  const [loading, setLoading] = React.useState(true)
+  const [loading, setLoading] = React.useState(!isLiveMode) // Don't show loading in live mode - WebSocket will populate instantly
   const [error, setError] = React.useState<string | null>(null)
   const [adjustingPosition, setAdjustingPosition] = React.useState<Position | null>(null)
   const [closingPosition, setClosingPosition] = React.useState<Position | null>(null)
   const [newStopLoss, setNewStopLoss] = React.useState('')
   const [newTakeProfit, setNewTakeProfit] = React.useState('')
 
-  // Use WebSocket for live mode, polling for test mode
-  const liveWsData = useLiveDashboardWebSocket()
+  // Use shared WebSocket data if provided (to avoid creating multiple connections)
+  // Otherwise create own connection ONLY if in live mode AND no shared data
+  const shouldUseOwnWebSocket = !sharedWsData && isLiveMode
+  const localWsData = shouldUseOwnWebSocket ? useLiveDashboardWebSocket() : {
+    balance: null,
+    positions: [],
+    orders: [],
+    connected: false,
+    error: null,
+    lastUpdate: 0,
+  }
+  
+  // Use shared data if provided, otherwise use local connection
+  const liveWsData = sharedWsData || localWsData
   const useWebSocket = isLiveMode // Enable WebSocket only in live mode
+
+  // Initialize with empty state for live mode to avoid loading screen
+  React.useEffect(() => {
+    if (isLiveMode && !data) {
+      setData({
+        strategy: { running: false, mode: '', symbol: '', type: '' },
+        positions: [],
+        signals: [],
+        trades: [],
+        statistics: {
+          total_trades: 0,
+          winning_trades: 0,
+          losing_trades: 0,
+          win_rate: 0,
+          realized_pnl: 0,
+          unrealized_pnl: 0,
+          total_pnl: 0,
+          active_positions: 0,
+        },
+        balance: {
+          current: 0,
+          initial: 0,
+          pnl: 0,
+          pnl_pct: 0,
+        },
+        timestamp: Date.now(),
+      })
+    }
+  }, [isLiveMode, data])
 
   const fetchDashboard = React.useCallback(async () => {
     try {
@@ -206,27 +249,41 @@ export default function LiveDashboard({ isLiveMode = false, hideSignals = false 
   // Update data from WebSocket if in live mode, otherwise poll
   React.useEffect(() => {
     if (useWebSocket && liveWsData.connected) {
-      // Merge WebSocket data with existing dashboard structure
-      if (liveWsData.balance || liveWsData.positions.length > 0) {
-        setData((prev) => {
-          if (!prev) return prev
+      // Debug: Log what we're receiving from WebSocket
+      console.log('[LiveDashboard] WebSocket data:', {
+        hasBalance: !!liveWsData.balance,
+        balance: liveWsData.balance,
+        positionsCount: liveWsData.positions.length,
+        connected: liveWsData.connected,
+        lastUpdate: liveWsData.lastUpdate
+      })
 
-          return {
-            ...prev,
-            balance: liveWsData.balance
-              ? {
-                  current: liveWsData.balance.net_balance,
-                  initial: liveWsData.balance.wallet_balance,
-                  pnl: liveWsData.balance.realized_pnl,
-                  pnl_pct: ((liveWsData.balance.net_balance - liveWsData.balance.wallet_balance) / liveWsData.balance.wallet_balance) * 100,
-                  live: true,
-                  wallet_balance: liveWsData.balance.wallet_balance,
-                  unrealized_pnl: liveWsData.balance.unrealized_pnl,
-                  realized_pnl: liveWsData.balance.realized_pnl,
-                  total_fees_paid: liveWsData.balance.total_fees_paid,
-                }
-              : prev.balance,
-            positions: liveWsData.positions.map((p) => ({
+      // Update whenever WebSocket has any data (balance, positions, or last update changes)
+      setData((prev) => {
+        if (!prev) return prev
+
+        // Always update balance if available from WebSocket
+        const updatedBalance = liveWsData.balance
+          ? {
+              current: liveWsData.balance.net_balance,
+              initial: liveWsData.balance.wallet_balance,
+              pnl: liveWsData.balance.realized_pnl,
+              pnl_pct: liveWsData.balance.wallet_balance > 0 
+                ? ((liveWsData.balance.net_balance - liveWsData.balance.wallet_balance) / liveWsData.balance.wallet_balance) * 100
+                : 0,
+              live: true,  // Critical: Mark as live balance
+              wallet_balance: liveWsData.balance.wallet_balance,
+              unrealized_pnl: liveWsData.balance.unrealized_pnl,
+              realized_pnl: liveWsData.balance.realized_pnl,
+              total_fees_paid: liveWsData.balance.total_fees_paid,
+            }
+          : prev.balance
+
+        console.log('[LiveDashboard] Updated balance:', updatedBalance)
+
+        // Update positions from WebSocket
+        const updatedPositions = liveWsData.positions.length > 0
+          ? liveWsData.positions.map((p: any) => ({
               symbol: p.symbol,
               side: p.side,
               entry_price: p.entry_price,
@@ -235,33 +292,38 @@ export default function LiveDashboard({ isLiveMode = false, hideSignals = false 
               stop_loss: p.stop_loss,
               take_profit: p.take_profit,
               unrealized_pnl: p.unrealized_pnl,
-              unrealized_pnl_pct: p.unrealized_pnl_pct || (p.unrealized_pnl / (p.entry_price * p.size)) * 100,
-            })),
-            statistics: {
-              ...prev.statistics,
-              active_positions: liveWsData.positions.length,
-              unrealized_pnl: liveWsData.positions.reduce((sum, p) => sum + p.unrealized_pnl, 0),
-            },
-            timestamp: liveWsData.lastUpdate,
-          }
-        })
-        setLoading(false)
-        setError(null)
-      }
-    }
-  }, [useWebSocket, liveWsData, liveWsData.lastUpdate])
+              unrealized_pnl_pct: p.unrealized_pnl_pct || (p.entry_price > 0 && p.size > 0 ? (p.unrealized_pnl / (p.entry_price * p.size)) * 100 : 0),
+            }))
+          : prev.positions
 
-  // Fallback polling for test mode or initial load
+        return {
+          ...prev,
+          balance: updatedBalance,
+          positions: updatedPositions,
+          statistics: {
+            ...prev.statistics,
+            active_positions: updatedPositions.length,
+            unrealized_pnl: updatedPositions.reduce((sum: number, p: any) => sum + p.unrealized_pnl, 0),
+          },
+          timestamp: liveWsData.lastUpdate || prev.timestamp,
+        }
+      })
+      setLoading(false)
+      setError(null)
+    }
+  }, [useWebSocket, liveWsData.connected, liveWsData.balance, liveWsData.positions, liveWsData.lastUpdate])
+
+  // Fallback polling for test mode ONLY
   React.useEffect(() => {
     if (!useWebSocket) {
-      // Test mode - use polling
+      // Test mode - use HTTP polling only
       fetchDashboard()
       const interval = setInterval(fetchDashboard, 2000)
       return () => clearInterval(interval)
-    } else {
-      // Live mode with WebSocket - do initial fetch for trades/signals/stats
-      fetchDashboard()
     }
+    // Live mode with WebSocket - NO HTTP polling needed
+    // WebSocket provides real-time balance, positions, and orders
+    // Trades/signals/stats are fetched on-demand or via separate endpoints if needed
   }, [fetchDashboard, useWebSocket])
 
   if (loading && !data) {
@@ -294,38 +356,40 @@ export default function LiveDashboard({ isLiveMode = false, hideSignals = false 
       )}
 
       {/* Strategy Status Bar */}
-      <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-4 flex items-center justify-between border border-slate-700/50">
-        <div className="flex items-center gap-4">
-          <div>
-            <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              strategy.running 
-                ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/20' 
-                : 'bg-slate-700 text-slate-400'
-            }`}>
-              {strategy.running ? '● LIVE' : '○ STOPPED'}
-            </span>
+      {!hideHeader && (
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-4 flex items-center justify-between border border-slate-700/50">
+          <div className="flex items-center gap-4">
+            <div>
+              <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                strategy.running 
+                  ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/20' 
+                  : 'bg-slate-700 text-slate-400'
+              }`}>
+                {strategy.running ? '● LIVE' : '○ STOPPED'}
+              </span>
+            </div>
+            {strategy.running && (
+              <>
+                <div className="text-sm">
+                  <span className="text-slate-500">Symbol:</span>{' '}
+                  <span className="font-semibold text-cyan-400">{strategy.symbol || '--'}</span>
+                </div>
+                <div className="text-sm">
+                  <span className="text-slate-500">Strategy:</span>{' '}
+                  <span className="font-semibold text-white uppercase">{strategy.type || '--'}</span>
+                </div>
+                <div className="text-sm">
+                  <span className="text-slate-500">Mode:</span>{' '}
+                  <span className="font-semibold text-purple-400">{strategy.mode || '--'}</span>
+                </div>
+              </>
+            )}
           </div>
-          {strategy.running && (
-            <>
-              <div className="text-sm">
-                <span className="text-slate-500">Symbol:</span>{' '}
-                <span className="font-semibold text-cyan-400">{strategy.symbol || '--'}</span>
-              </div>
-              <div className="text-sm">
-                <span className="text-slate-500">Strategy:</span>{' '}
-                <span className="font-semibold text-white uppercase">{strategy.type || '--'}</span>
-              </div>
-              <div className="text-sm">
-                <span className="text-slate-500">Mode:</span>{' '}
-                <span className="font-semibold text-purple-400">{strategy.mode || '--'}</span>
-              </div>
-            </>
-          )}
+          <div className="text-xs text-slate-500">
+            Updated: {formatTime(data.timestamp)}
+          </div>
         </div>
-        <div className="text-xs text-slate-500">
-          Updated: {formatTime(data.timestamp)}
-        </div>
-      </div>
+      )}
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-5 gap-3">

@@ -6,6 +6,7 @@ import LiveDashboard from '../../components/LiveDashboard'
 import SocialSentiment from '../../components/SocialSentiment'
 import ManualTradingPanel from '../../components/ManualTradingPanel'
 import LiveManualTradingPanel from '../../components/LiveManualTradingPanel'
+import { useLiveDashboardWebSocket } from '../../hooks/useLiveDashboardWebSocket'
 
 function useHotWs() {
   const [hot, setHot] = React.useState<any[]>([])
@@ -40,6 +41,9 @@ export default function TradingPage() {
   const initialMarket = params?.get('market') || 'spot'
 
   const hot = useHotWs()
+  
+  // SINGLE WebSocket connection for ALL LiveDashboard components (prevents connection loop)
+  const liveWsData = useLiveDashboardWebSocket()
 
   const [symbol, setSymbol] = React.useState(initialSymbol)
   const [market, setMarket] = React.useState(initialMarket)
@@ -484,6 +488,13 @@ export default function TradingPage() {
       chartContainerRef.current.innerHTML = ''
     }
 
+    // Determine the correct TradingView symbol format
+    // For futures/perpetuals, TradingView uses .P suffix (e.g., BINANCE:BTCUSDT.P)
+    // For spot markets, use the symbol as-is (e.g., BINANCE:BTCUSDT)
+    const tradingViewSymbol = market === 'futures' 
+      ? `BINANCE:${symbol}.P` 
+      : `BINANCE:${symbol}`
+
     // Load TradingView widget script
     const script = document.createElement('script')
     script.src = 'https://s3.tradingview.com/tv.js'
@@ -492,7 +503,7 @@ export default function TradingPage() {
       if (typeof (window as any).TradingView !== 'undefined' && chartContainerRef.current) {
         new (window as any).TradingView.widget({
           autosize: true,
-          symbol: `BINANCE:${symbol}`,
+          symbol: tradingViewSymbol,
           interval: '15',
           timezone: 'Etc/UTC',
           theme: 'dark',
@@ -522,7 +533,7 @@ export default function TradingPage() {
       const scripts = document.head.querySelectorAll('script[src*="tradingview"]')
       scripts.forEach(s => s.remove())
     }
-  }, [symbol])
+  }, [symbol, market])
 
   return (
     <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 min-h-screen">
@@ -571,8 +582,7 @@ export default function TradingPage() {
         </div>
 
         {/* Trading Tab Content */}
-        {activeTab === 'trading' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4" style={{ display: activeTab === 'trading' ? 'grid' : 'none' }}>
           <div className="lg:col-span-7 space-y-4">
             {/* TradingView Chart */}
             {symbol && (
@@ -835,7 +845,8 @@ export default function TradingPage() {
                 {symbol && asks.length > 0 ? (
                   <LiveManualTradingPanel 
                     symbol={symbol} 
-                    currentPrice={parseFloat(price) || parseFloat(asks[0][0])} 
+                    currentPrice={parseFloat(price) || parseFloat(asks[0][0])}
+                    sharedWsData={liveWsData}
                   />
                 ) : (
                   <div className="text-center py-8 text-slate-400 bg-slate-800/30 rounded-2xl border border-slate-700/50">
@@ -876,7 +887,7 @@ export default function TradingPage() {
               {/* Always use LiveDashboard but control with isLiveMode prop */}
               {/* In Test Mode: Shows test balance and test positions only */}
               {/* In Live Mode: Shows live Binance balance and live positions only */}
-              <LiveDashboard isLiveMode={!isTestMode} hideSignals={true} />
+              <LiveDashboard isLiveMode={!isTestMode} hideSignals={true} hideHeader={true} sharedWsData={liveWsData} />
             </div>
           </div>
 
@@ -1196,11 +1207,9 @@ export default function TradingPage() {
           </div>
         </div>
       </div>
-        )}
 
         {/* Strategies Tab Content */}
-        {activeTab === 'strategies' && (
-          <div className="space-y-6">
+        <div className="space-y-6" style={{ display: activeTab === 'strategies' ? 'block' : 'none' }}>
             {/* Live Strategy Dashboard */}
             <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 p-6">
               <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
@@ -1212,7 +1221,7 @@ export default function TradingPage() {
               {/* Always use LiveDashboard but control with isLiveMode prop */}
               {/* In Test Mode: Shows test balance and test positions only */}
               {/* In Live Mode: Shows live Binance balance and live positions only */}
-              <LiveDashboard isLiveMode={!isTestMode} />
+              <LiveDashboard isLiveMode={!isTestMode} sharedWsData={liveWsData} />
             </div>
 
             {/* Live Strategy Control */}
@@ -1430,11 +1439,9 @@ export default function TradingPage() {
               </div>
             )}
           </div>
-        )}
 
         {/* Order History Tab Content */}
-        {activeTab === 'orders' && (
-          <div className="space-y-6">
+        <div className="space-y-6" style={{ display: activeTab === 'orders' ? 'block' : 'none' }}>
             {/* Order History Header */}
             <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 p-6">
               <div className="flex items-center justify-between mb-4">
@@ -1526,7 +1533,9 @@ export default function TradingPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {orders.map((order, idx) => (
+                      {orders
+                        .filter(order => !orderSymbolFilter || order.symbol.toUpperCase().includes(orderSymbolFilter))
+                        .map((order, idx) => (
                         <tr key={order.id || idx} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
                           <td className="py-3 px-4 text-slate-300 text-xs">
                             {order.datetime ? new Date(order.datetime).toLocaleString() : '-'}
@@ -1583,7 +1592,6 @@ export default function TradingPage() {
               )}
             </div>
           </div>
-        )}
       </div>
     </div>
   )

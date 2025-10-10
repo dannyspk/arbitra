@@ -6,9 +6,10 @@ import { useLiveDashboardWebSocket } from '../hooks/useLiveDashboardWebSocket'
 interface LiveManualTradeProps {
   symbol: string
   currentPrice: number
+  sharedWsData?: any // Allow passing WebSocket data from parent to avoid multiple connections
 }
 
-export default function LiveManualTradingPanel({ symbol, currentPrice }: LiveManualTradeProps) {
+export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsData }: LiveManualTradeProps) {
   const [leverage, setLeverage] = React.useState(1)
   // Track positions separately for hedge mode (can have both LONG and SHORT)
   const [hasLongPosition, setHasLongPosition] = React.useState(false)
@@ -27,8 +28,20 @@ export default function LiveManualTradingPanel({ symbol, currentPrice }: LiveMan
   const [showConfirmation, setShowConfirmation] = React.useState(false)
   const [pendingOrder, setPendingOrder] = React.useState<{ side: 'long' | 'short' } | null>(null)
 
-  // Use WebSocket for real-time updates
-  const liveWsData = useLiveDashboardWebSocket()
+  // Use shared WebSocket data if provided (to avoid creating multiple connections)
+  // Otherwise create own connection ONLY if no shared data
+  const shouldUseOwnWebSocket = !sharedWsData
+  const localWsData = shouldUseOwnWebSocket ? useLiveDashboardWebSocket() : {
+    balance: null,
+    positions: [],
+    orders: [],
+    connected: false,
+    error: null,
+    lastUpdate: 0,
+  }
+  
+  // Use shared data if provided, otherwise use local connection
+  const liveWsData = sharedWsData || localWsData
 
   const maxOrderSize = balance * leverage
 
@@ -52,8 +65,8 @@ export default function LiveManualTradingPanel({ symbol, currentPrice }: LiveMan
   // Use useMemo to prevent flickering by only updating when positions actually change
   React.useEffect(() => {
     if (liveWsData.connected && liveWsData.positions) {
-      const longPos = liveWsData.positions.find((p) => p.symbol === symbol && p.side === 'long')
-      const shortPos = liveWsData.positions.find((p) => p.symbol === symbol && p.side === 'short')
+      const longPos = liveWsData.positions.find((p: any) => p.symbol === symbol && p.side === 'long')
+      const shortPos = liveWsData.positions.find((p: any) => p.symbol === symbol && p.side === 'short')
       
       // Only update LONG position if it actually changed
       const hasLong = !!longPos
@@ -91,7 +104,7 @@ export default function LiveManualTradingPanel({ symbol, currentPrice }: LiveMan
     }
   }, [liveWsData.positions, liveWsData.connected, symbol, hasLongPosition, hasShortPosition, longPosition, shortPosition])
 
-  // Fallback: Poll for initial data if WebSocket not connected
+  // Fallback: Poll for initial data ONLY if WebSocket is not connected
   React.useEffect(() => {
     if (!liveWsData.connected) {
       const fetchData = async () => {
@@ -136,10 +149,12 @@ export default function LiveManualTradingPanel({ symbol, currentPrice }: LiveMan
         }
       }
 
+      // Only fetch once initially, then poll every 5 seconds (increased from 2s to reduce load)
       fetchData()
-      const interval = setInterval(fetchData, 2000) // Fallback polling
+      const interval = setInterval(fetchData, 5000)
       return () => clearInterval(interval)
     }
+    // When WebSocket is connected, no HTTP polling needed - WebSocket provides real-time updates
   }, [liveWsData.connected, symbol])
 
   const handlePlaceOrderClick = (side: 'long' | 'short') => {
@@ -405,29 +420,7 @@ export default function LiveManualTradingPanel({ symbol, currentPrice }: LiveMan
         )}
       </div>
 
-      {/* LIVE INFO */}
-      <div className={`mb-6 border rounded-lg p-4 ${
-        liveWsData.connected 
-          ? 'bg-green-500/10 border-green-500/30' 
-          : 'bg-blue-500/10 border-blue-500/30'
-      }`}>
-        <div className="flex items-start gap-2">
-          <svg className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
-            liveWsData.connected ? 'text-green-400' : 'text-blue-400'
-          }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <div className={`text-xs ${liveWsData.connected ? 'text-green-300' : 'text-blue-300'}`}>
-            <strong className={liveWsData.connected ? 'text-green-400' : 'text-blue-400'}>
-              {liveWsData.connected ? '⚡ WebSocket Connected:' : '🔄 LIVE TRADING:'}
-            </strong>
-            {liveWsData.connected 
-              ? ' Real-time updates from Binance. Balance and positions update instantly.'
-              : ' Connected to Binance. All orders execute in real-time. Manage your risk carefully and use stop-loss orders.'
-            }
-          </div>
-        </div>
-      </div>
+      
 
       {/* Leverage Slider */}
       <div className="mb-6 bg-slate-800/30 rounded-lg p-4 border border-slate-700/30">
