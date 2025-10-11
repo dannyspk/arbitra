@@ -409,23 +409,23 @@ export default function WalletConnect({
   if (address) {
     // Connected state - show wallet info
     return (
-      <div className="flex items-center gap-3">
-        <div className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 flex items-center gap-3">
-          <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <div className="bg-slate-800 border border-slate-700 rounded-lg px-2 sm:px-4 py-1.5 sm:py-2 flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span className="text-sm text-slate-400">{getChainName(chainId)}</span>
+            <span className="text-xs sm:text-sm text-slate-400 hidden sm:inline">{getChainName(chainId)}</span>
           </div>
-          <div className="h-4 w-px bg-slate-700"></div>
-          <div className="flex items-center gap-2">
+          <div className="h-4 w-px bg-slate-700 hidden sm:block"></div>
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {getWalletIcon()}
-            <span className="text-sm font-mono text-white">{formatAddress(address)}</span>
+            <span className="text-xs sm:text-sm font-mono text-white">{formatAddress(address)}</span>
           </div>
           <button
             onClick={disconnect}
-            className="text-slate-400 hover:text-red-400 transition-colors ml-2"
+            className="text-slate-400 hover:text-red-400 transition-colors ml-1 sm:ml-2"
             title="Disconnect wallet"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -442,12 +442,13 @@ export default function WalletConnect({
           setShowModal(true)
           setError(null) // Clear any previous errors when opening modal
         }}
-        className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white pl-[1rem] pr-5 py-2.5 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2.5 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 hover:scale-[1.02]"
+        className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg font-semibold transition-all duration-200 flex items-center gap-1.5 sm:gap-2.5 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 hover:scale-[1.02] text-xs sm:text-base"
       >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
-        <span className="leading-none">Connect Wallet</span>
+        <span className="leading-none hidden sm:inline">Connect Wallet</span>
+        <span className="leading-none sm:hidden">Connect</span>
       </button>
 
       {/* Wallet Selection Modal */}

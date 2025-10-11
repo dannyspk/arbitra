@@ -423,11 +423,11 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
       
 
       {/* Leverage Slider */}
-      <div className="mb-6 bg-slate-800/30 rounded-lg p-4 border border-slate-700/30">
-        <div className="flex items-center justify-between mb-3">
-          <label className="text-sm font-semibold text-slate-300">Leverage (Futures)</label>
-          <div className="flex items-center gap-2 bg-cyan-500/20 border border-cyan-500/30 rounded-lg px-3 py-1">
-            <span className="text-lg font-bold text-cyan-400">{leverage}x</span>
+      <div className="mb-4 sm:mb-6 bg-slate-800/30 rounded-lg p-3 sm:p-4 border border-slate-700/30">
+        <div className="flex items-center justify-between mb-2 sm:mb-3">
+          <label className="text-xs sm:text-sm font-semibold text-slate-300">Leverage (Futures)</label>
+          <div className="flex items-center gap-2 bg-cyan-500/20 border border-cyan-500/30 rounded-lg px-2 sm:px-3 py-1">
+            <span className="text-base sm:text-lg font-bold text-cyan-400">{leverage}x</span>
           </div>
         </div>
         <input
@@ -447,15 +447,15 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
       </div>
 
       {/* Order Size */}
-      <div className="mb-6 bg-slate-800/30 rounded-lg p-4 border border-slate-700/30">
-        <div className="flex items-center justify-between mb-3">
-          <label className="text-sm font-semibold text-slate-300">Order Size (USDT)</label>
-          <span className="text-sm text-slate-400">Max: ${maxOrderSize.toFixed(2)}</span>
+      <div className="mb-4 sm:mb-6 bg-slate-800/30 rounded-lg p-3 sm:p-4 border border-slate-700/30">
+        <div className="flex items-center justify-between mb-2 sm:mb-3">
+          <label className="text-xs sm:text-sm font-semibold text-slate-300">Order Size (USDT)</label>
+          <span className="text-xs sm:text-sm text-slate-400">Max: ${maxOrderSize.toFixed(2)}</span>
         </div>
         
         {/* Custom Input Field */}
         <div className="relative">
-          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cyan-400 text-lg font-bold">$</span>
+          <span className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-cyan-400 text-base sm:text-lg font-bold">$</span>
           <input
             type="number"
             min="10"
@@ -470,7 +470,7 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
             style={{
               MozAppearance: 'textfield'
             }}
-            className="w-full bg-slate-800 text-white rounded-lg pl-9 pr-4 py-3 text-lg font-bold border-2 border-cyan-500/30 focus:outline-none focus:border-cyan-500 transition-colors no-spinner"
+            className="w-full bg-slate-800 text-white rounded-lg pl-8 sm:pl-9 pr-3 sm:pr-4 py-2.5 sm:py-3 text-base sm:text-lg font-bold border-2 border-cyan-500/30 focus:outline-none focus:border-cyan-500 transition-colors no-spinner"
             placeholder="0"
           />
           <style jsx>{`
@@ -487,36 +487,36 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
         </div>
         
         {/* Quick amount buttons */}
-        <div className="flex gap-2 mt-3">
+        <div className="grid grid-cols-4 gap-1.5 sm:gap-2 mt-2 sm:mt-3">
           <button
             onClick={() => setOrderSize(Math.min(25, maxOrderSize))}
-            className="flex-1 bg-slate-700/50 hover:bg-slate-700 text-slate-300 text-xs font-semibold py-2 rounded-lg transition-colors border border-slate-600/50"
+            className="bg-slate-700/50 hover:bg-slate-700 text-slate-300 text-xs font-semibold py-1.5 sm:py-2 rounded-lg transition-colors border border-slate-600/50"
           >
             $25
           </button>
           <button
             onClick={() => setOrderSize(Math.min(50, maxOrderSize))}
-            className="flex-1 bg-slate-700/50 hover:bg-slate-700 text-slate-300 text-xs font-semibold py-2 rounded-lg transition-colors border border-slate-600/50"
+            className="bg-slate-700/50 hover:bg-slate-700 text-slate-300 text-xs font-semibold py-1.5 sm:py-2 rounded-lg transition-colors border border-slate-600/50"
           >
             $50
           </button>
           <button
             onClick={() => setOrderSize(Math.min(100, maxOrderSize))}
-            className="flex-1 bg-slate-700/50 hover:bg-slate-700 text-slate-300 text-xs font-semibold py-2 rounded-lg transition-colors border border-slate-600/50"
+            className="bg-slate-700/50 hover:bg-slate-700 text-slate-300 text-xs font-semibold py-1.5 sm:py-2 rounded-lg transition-colors border border-slate-600/50"
           >
             $100
           </button>
           <button
             onClick={() => setOrderSize(maxOrderSize)}
-            className="flex-1 bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-400 text-xs font-semibold py-2 rounded-lg transition-colors border border-cyan-500/50"
+            className="bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-400 text-xs font-semibold py-1.5 sm:py-2 rounded-lg transition-colors border border-cyan-500/50"
           >
             MAX
           </button>
         </div>
         
-        <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-700/50">
+        <div className="flex justify-between items-center mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-slate-700/50">
           <span className="text-xs text-slate-500">Position size:</span>
-          <span className="text-sm font-semibold text-cyan-400">
+          <span className="text-xs sm:text-sm font-semibold text-cyan-400">
             {(orderSize / currentPrice).toFixed(4)} {symbol.replace('USDT', '')}
           </span>
         </div>
@@ -529,9 +529,9 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
       </div>
 
       {/* Take Profit / Stop Loss */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-green-500/10 rounded-lg p-4 border border-green-500/30">
-          <label className="text-xs font-semibold text-green-400 mb-2 block">Take Profit %</label>
+      <div className="grid grid-cols-2 gap-2 sm:gap-4 mb-4 sm:mb-6">
+        <div className="bg-green-500/10 rounded-lg p-3 sm:p-4 border border-green-500/30">
+          <label className="text-xs font-semibold text-green-400 mb-1.5 sm:mb-2 block">Take Profit %</label>
           <input
             type="number"
             min="0.5"
@@ -539,15 +539,15 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
             step="0.5"
             value={takeProfitPct}
             onChange={(e) => setTakeProfitPct(parseFloat(e.target.value))}
-            className="w-full bg-slate-800 text-white rounded px-3 py-2 text-sm border border-green-500/30 focus:outline-none focus:border-green-500"
+            className="w-full bg-slate-800 text-white rounded px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-green-500/30 focus:outline-none focus:border-green-500"
           />
           <div className="text-xs text-green-400/70 mt-1">
             ${(currentPrice * (1 + takeProfitPct / 100)).toFixed(2)}
           </div>
         </div>
 
-        <div className="bg-red-500/10 rounded-lg p-4 border border-red-500/30">
-          <label className="text-xs font-semibold text-red-400 mb-2 block">Stop Loss %</label>
+        <div className="bg-red-500/10 rounded-lg p-3 sm:p-4 border border-red-500/30">
+          <label className="text-xs font-semibold text-red-400 mb-1.5 sm:mb-2 block">Stop Loss %</label>
           <input
             type="number"
             min="0.5"
@@ -555,7 +555,7 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
             step="0.5"
             value={stopLossPct}
             onChange={(e) => setStopLossPct(parseFloat(e.target.value))}
-            className="w-full bg-slate-800 text-white rounded px-3 py-2 text-sm border border-red-500/30 focus:outline-none focus:border-red-500"
+            className="w-full bg-slate-800 text-white rounded px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-red-500/30 focus:outline-none focus:border-red-500"
           />
           <div className="text-xs text-red-400/70 mt-1">
             ${(currentPrice * (1 - stopLossPct / 100)).toFixed(2)}
@@ -564,18 +564,18 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
       </div>
 
       {/* Action Buttons - Always show for hedge mode (can have LONG + SHORT simultaneously) */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-2 sm:gap-4">
         <button
           onClick={() => handlePlaceOrderClick('long')}
           disabled={loading || balance < 10}
-          className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 disabled:from-slate-700 disabled:to-slate-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-green-500/50 disabled:cursor-not-allowed"
+          className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 disabled:from-slate-700 disabled:to-slate-600 text-white font-semibold py-2.5 sm:py-3 px-3 sm:px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-green-500/50 disabled:cursor-not-allowed text-xs sm:text-base"
         >
           {loading ? '...' : '📈 LONG'}
         </button>
         <button
           onClick={() => handlePlaceOrderClick('short')}
           disabled={loading || balance < 10}
-          className="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 disabled:from-slate-700 disabled:to-slate-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-red-500/50 disabled:cursor-not-allowed"
+          className="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 disabled:from-slate-700 disabled:to-slate-600 text-white font-semibold py-2.5 sm:py-3 px-3 sm:px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-red-500/50 disabled:cursor-not-allowed text-xs sm:text-base"
         >
           {loading ? '...' : '📉 SHORT'}
         </button>

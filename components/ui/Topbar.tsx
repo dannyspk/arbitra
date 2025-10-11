@@ -2,6 +2,7 @@ import React from 'react'
 import { useConnection } from '../../components/ConnectionProvider'
 import { createPortal } from 'react-dom'
 import WalletConnect from '../WalletConnect'
+import { useSidebar } from './ResponsiveLayout'
 
 function useApiKey() {
   const [key, setKey] = React.useState<string | null>(() => {
@@ -22,6 +23,7 @@ function useApiKey() {
 
 export default function Topbar() {
   const { connected, connect, disconnect } = useConnection()
+  const { setSidebarOpen } = useSidebar()
   const { key, setKey } = useApiKey()
   const [notifEnabled, setNotifEnabled] = React.useState<boolean>(false)
   const API = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
@@ -287,8 +289,41 @@ export default function Topbar() {
 
   return (
     <>
-    <header className="flex items-center justify-between">
-      <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent"></div>
+    <header className="flex items-center justify-between gap-3">
+      {/* Hamburger menu + Logo - visible on mobile/tablet */}
+      <div className="flex items-center gap-3 lg:hidden">
+        {/* Hamburger menu button */}
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="p-2 bg-slate-900/90 backdrop-blur-sm border border-slate-700 rounded-lg shadow-lg hover:bg-slate-800 transition-colors"
+        >
+          <svg className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        
+        {/* Logo */}
+        <img 
+          src="/arbitrage-logo.png" 
+          alt="Arbitras" 
+          className="h-10 sm:h-12 w-auto"
+          onError={(e) => {
+            // Fallback to text if image fails to load
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+            const fallback = target.nextElementSibling;
+            if (fallback) (fallback as HTMLElement).style.display = 'block';
+          }}
+        />
+        <span 
+          className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(34,211,238,0.3)]"
+          style={{ display: 'none' }}
+        >
+          Arbitras
+        </span>
+      </div>
+      {/* Empty spacer for desktop - keeps layout consistent */}
+      <div className="hidden lg:block"></div>
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
           {/* Bell icon: shows capped notifications (1 or 2) when feature_extractor has recent alerts */}

@@ -181,8 +181,32 @@ export default function LiveDashboard({ isLiveMode = false, hideSignals = false,
     try {
       const backend = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
       
-      // Get current price from position data (it's already updated in real-time)
-      const currentPrice = closingPosition.entry_price + (closingPosition.unrealized_pnl / closingPosition.size)
+      // Fetch current market price from the backend
+      let currentPrice: number
+      try {
+        const priceResponse = await fetch(`${backend}/api/price/${closingPosition.symbol}`)
+        if (priceResponse.ok) {
+          const priceData = await priceResponse.json()
+          currentPrice = priceData.price
+        } else {
+          // Fallback: calculate from unrealized P&L (less accurate)
+          if (closingPosition.side === 'long') {
+            currentPrice = closingPosition.entry_price + (closingPosition.unrealized_pnl / closingPosition.size)
+          } else {
+            // For SHORT: if price went down, pnl is positive, so current_price = entry - (pnl/size)
+            currentPrice = closingPosition.entry_price - (closingPosition.unrealized_pnl / closingPosition.size)
+          }
+        }
+      } catch {
+        // Fallback calculation
+        if (closingPosition.side === 'long') {
+          currentPrice = closingPosition.entry_price + (closingPosition.unrealized_pnl / closingPosition.size)
+        } else {
+          currentPrice = closingPosition.entry_price - (closingPosition.unrealized_pnl / closingPosition.size)
+        }
+      }
+      
+      console.log(`[CLOSE POSITION] ${closingPosition.symbol} ${closingPosition.side} at ${currentPrice}`)
       
       const response = await fetch(`${backend}/api/manual-trade/close`, {
         method: 'POST',
@@ -392,8 +416,8 @@ export default function LiveDashboard({ isLiveMode = false, hideSignals = false,
       )}
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-5 gap-3">
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-lg p-4 hover:border-cyan-500/30 transition-all">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-lg p-3 sm:p-4 hover:border-cyan-500/30 transition-all">
           <div className="text-xs text-slate-400 mb-1 uppercase tracking-wide flex items-center gap-2">
             {data.balance?.live ? (
               <>
@@ -403,7 +427,7 @@ export default function LiveDashboard({ isLiveMode = false, hideSignals = false,
               'Test Balance'
             )}
           </div>
-          <div className={`text-2xl font-bold ${(data.balance?.pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+          <div className={`text-lg sm:text-2xl font-bold ${(data.balance?.pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
             {data.balance?.live ? (
               // Live: Show wallet_balance + unrealized_pnl
               `$${((data.balance.wallet_balance || 0) + (data.balance.unrealized_pnl || 0)).toFixed(2)}`
@@ -431,23 +455,23 @@ export default function LiveDashboard({ isLiveMode = false, hideSignals = false,
             </div>
           )}
         </div>
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-lg p-4 hover:border-cyan-500/30 transition-all">
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-lg p-3 sm:p-4 hover:border-cyan-500/30 transition-all">
           <div className="text-xs text-slate-400 mb-1 uppercase tracking-wide">Total Trades</div>
-          <div className="text-2xl font-bold text-white">{statistics.total_trades}</div>
+          <div className="text-lg sm:text-2xl font-bold text-white">{statistics.total_trades}</div>
         </div>
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-lg p-4 hover:border-cyan-500/30 transition-all">
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-lg p-3 sm:p-4 hover:border-cyan-500/30 transition-all">
           <div className="text-xs text-slate-400 mb-1 uppercase tracking-wide">Win Rate</div>
-          <div className="text-2xl font-bold text-white">{statistics.win_rate.toFixed(1)}%</div>
+          <div className="text-lg sm:text-2xl font-bold text-white">{statistics.win_rate.toFixed(1)}%</div>
         </div>
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-lg p-4 hover:border-cyan-500/30 transition-all">
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-lg p-3 sm:p-4 hover:border-cyan-500/30 transition-all">
           <div className="text-xs text-slate-400 mb-1 uppercase tracking-wide">Realized P&L</div>
-          <div className={`text-2xl font-bold ${statistics.realized_pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+          <div className={`text-lg sm:text-2xl font-bold ${statistics.realized_pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
             {formatPrice(statistics.realized_pnl)}
           </div>
         </div>
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-lg p-4 hover:border-cyan-500/30 transition-all">
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-lg p-3 sm:p-4 hover:border-cyan-500/30 transition-all">
           <div className="text-xs text-slate-400 mb-1 uppercase tracking-wide">Unrealized P&L</div>
-          <div className={`text-2xl font-bold ${statistics.unrealized_pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+          <div className={`text-lg sm:text-2xl font-bold ${statistics.unrealized_pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
             {formatPrice(statistics.unrealized_pnl)}
           </div>
         </div>
@@ -455,31 +479,31 @@ export default function LiveDashboard({ isLiveMode = false, hideSignals = false,
 
       {/* My Positions */}
       <div>
-        <h3 className="text-sm font-semibold mb-3 text-slate-300 uppercase tracking-wide">My Positions ({positions.length})</h3>
+        <h3 className="text-xs sm:text-sm font-semibold mb-2 sm:mb-3 text-slate-300 uppercase tracking-wide">My Positions ({positions.length})</h3>
         {positions.length === 0 ? (
-          <div className="text-sm text-slate-500 bg-slate-800/30 rounded-lg p-4 border border-slate-700/30">No open positions</div>
+          <div className="text-xs sm:text-sm text-slate-500 bg-slate-800/30 rounded-lg p-3 sm:p-4 border border-slate-700/30">No open positions</div>
         ) : (
-          <div className="overflow-x-auto bg-slate-800/30 rounded-lg border border-slate-700/50">
-            <table className="w-full text-xs">
+          <div className="overflow-x-auto bg-slate-800/30 rounded-lg border border-slate-700/50 -mx-4 sm:mx-0">
+            <table className="min-w-full text-xs">
               <thead className="bg-slate-800/50 text-slate-300 border-b border-slate-700/50">
                 <tr>
-                  <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Symbol</th>
-                  <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Side</th>
-                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Entry</th>
-                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Size</th>
-                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">P&L</th>
-                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">P&L %</th>
-                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">SL</th>
-                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">TP</th>
-                  <th className="px-4 py-3 text-center font-semibold uppercase tracking-wider">Action</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold uppercase tracking-wider whitespace-nowrap">Symbol</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold uppercase tracking-wider whitespace-nowrap">Side</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-right font-semibold uppercase tracking-wider whitespace-nowrap">Entry</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-right font-semibold uppercase tracking-wider whitespace-nowrap">Size</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-right font-semibold uppercase tracking-wider whitespace-nowrap">P&L</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-right font-semibold uppercase tracking-wider whitespace-nowrap">P&L %</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-right font-semibold uppercase tracking-wider whitespace-nowrap">SL</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-right font-semibold uppercase tracking-wider whitespace-nowrap">TP</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-center font-semibold uppercase tracking-wider whitespace-nowrap">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-700/30">
                 {positions.map((pos, i) => (
                   <tr key={i} className="hover:bg-slate-700/20 transition-colors">
-                    <td className="px-4 py-3 font-medium text-white">{pos.symbol}</td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-block px-2 py-1 rounded-lg text-xs font-semibold ${
+                    <td className="px-2 sm:px-4 py-2 sm:py-3 font-medium text-white whitespace-nowrap">{pos.symbol}</td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-3">
+                      <span className={`inline-block px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg text-xs font-semibold whitespace-nowrap ${
                         pos.side === 'long' 
                           ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
                           : 'bg-red-500/20 text-red-400 border border-red-500/30'
@@ -487,32 +511,32 @@ export default function LiveDashboard({ isLiveMode = false, hideSignals = false,
                         {pos.side.toUpperCase()}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-right font-mono text-slate-300">{formatPrice(pos.entry_price)}</td>
-                    <td className="px-4 py-3 text-right font-mono text-slate-300">{pos.size.toFixed(4)}</td>
-                    <td className={`px-4 py-3 text-right font-mono font-semibold ${
+                    <td className="px-2 sm:px-4 py-2 sm:py-3 text-right font-mono text-slate-300 whitespace-nowrap">{formatPrice(pos.entry_price)}</td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-3 text-right font-mono text-slate-300 whitespace-nowrap">{pos.size.toFixed(4)}</td>
+                    <td className={`px-2 sm:px-4 py-2 sm:py-3 text-right font-mono font-semibold whitespace-nowrap ${
                       pos.unrealized_pnl >= 0 ? 'text-green-400' : 'text-red-400'
                     }`}>
                       {formatPrice(pos.unrealized_pnl)}
                     </td>
-                    <td className={`px-4 py-3 text-right font-mono font-semibold ${
+                    <td className={`px-2 sm:px-4 py-2 sm:py-3 text-right font-mono font-semibold whitespace-nowrap ${
                       pos.unrealized_pnl_pct >= 0 ? 'text-green-400' : 'text-red-400'
                     }`}>
                       {formatPercent(pos.unrealized_pnl_pct)}
                     </td>
-                    <td className="px-4 py-3 text-right font-mono text-slate-500">{formatPrice(pos.stop_loss)}</td>
-                    <td className="px-4 py-3 text-right font-mono text-slate-500">{formatPrice(pos.take_profit)}</td>
-                    <td className="px-4 py-3 text-center">
-                      <div className="flex items-center justify-center gap-2">
+                    <td className="px-2 sm:px-4 py-2 sm:py-3 text-right font-mono text-slate-500 whitespace-nowrap">{formatPrice(pos.stop_loss)}</td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-3 text-right font-mono text-slate-500 whitespace-nowrap">{formatPrice(pos.take_profit)}</td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-3 text-center">
+                      <div className="flex items-center justify-center gap-1 sm:gap-2">
                         <button
                           onClick={() => handleClosePosition(pos)}
-                          className="px-3 py-1.5 bg-purple-600/80 hover:bg-purple-500 text-white text-xs font-semibold rounded transition-colors"
+                          className="px-2 sm:px-3 py-1 sm:py-1.5 bg-purple-600/80 hover:bg-purple-500 text-white text-xs font-semibold rounded transition-colors whitespace-nowrap"
                           title="Close position"
                         >
                           Close
                         </button>
                         <button
                           onClick={() => handleAdjustClick(pos)}
-                          className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-semibold rounded transition-colors"
+                          className="px-2 sm:px-3 py-1 sm:py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-semibold rounded transition-colors"
                           title="Adjust SL/TP"
                         >
                           ⚙️
@@ -530,38 +554,38 @@ export default function LiveDashboard({ isLiveMode = false, hideSignals = false,
       {/* Recent Signals */}
       {!hideSignals && (
       <div>
-        <h3 className="text-sm font-semibold mb-3 text-slate-300 uppercase tracking-wide">Recent Signals</h3>
+        <h3 className="text-xs sm:text-sm font-semibold mb-2 sm:mb-3 text-slate-300 uppercase tracking-wide">Recent Signals</h3>
         {signals.length === 0 ? (
-          <div className="text-sm text-slate-500 bg-slate-800/30 rounded-lg p-4 border border-slate-700/30">No signals yet</div>
+          <div className="text-xs sm:text-sm text-slate-500 bg-slate-800/30 rounded-lg p-3 sm:p-4 border border-slate-700/30">No signals yet</div>
         ) : (
-          <div className="overflow-x-auto max-h-48 overflow-y-auto bg-slate-800/30 rounded-lg border border-slate-700/50">
-            <table className="w-full text-xs">
+          <div className="overflow-x-auto max-h-48 overflow-y-auto bg-slate-800/30 rounded-lg border border-slate-700/50 -mx-4 sm:mx-0">
+            <table className="min-w-full text-xs">
               <thead className="bg-slate-800/50 text-slate-300 sticky top-0 border-b border-slate-700/50">
                 <tr>
-                  <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Time</th>
-                  <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Symbol</th>
-                  <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Action</th>
-                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Price</th>
-                  <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Reason</th>
-                  <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Status</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold uppercase tracking-wider whitespace-nowrap">Time</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold uppercase tracking-wider whitespace-nowrap">Symbol</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold uppercase tracking-wider whitespace-nowrap">Action</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-right font-semibold uppercase tracking-wider whitespace-nowrap">Price</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold uppercase tracking-wider whitespace-nowrap">Reason</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold uppercase tracking-wider whitespace-nowrap">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-700/30">
                 {signals.slice(0, 10).map((sig, i) => (
                   <tr key={i} className="hover:bg-slate-700/20 transition-colors">
-                    <td className="px-4 py-3 text-slate-400">{formatTime(sig.timestamp)}</td>
-                    <td className="px-4 py-3 font-medium text-white">{sig.symbol}</td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-block px-2 py-1 rounded-lg text-xs font-semibold ${
+                    <td className="px-2 sm:px-4 py-2 sm:py-3 text-slate-400 whitespace-nowrap">{formatTime(sig.timestamp)}</td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-3 font-medium text-white whitespace-nowrap">{sig.symbol}</td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-3">
+                      <span className={`inline-block px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg text-xs font-semibold whitespace-nowrap ${
                         sig.action.includes('long') ? 'text-green-400' : 'text-red-400'
                       }`}>
                         {sig.action}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-right font-mono text-slate-300">{formatPrice(sig.price)}</td>
-                    <td className="px-4 py-3 text-slate-400">{sig.reason}</td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-block px-2 py-1 rounded-lg text-xs font-semibold ${
+                    <td className="px-2 sm:px-4 py-2 sm:py-3 text-right font-mono text-slate-300 whitespace-nowrap">{formatPrice(sig.price)}</td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-3 text-slate-400 whitespace-nowrap">{sig.reason}</td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-3">
+                      <span className={`inline-block px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg text-xs font-semibold whitespace-nowrap ${
                         sig.status === 'executed' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' :
                         sig.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
                         'bg-red-500/20 text-red-400 border border-red-500/30'
@@ -581,28 +605,28 @@ export default function LiveDashboard({ isLiveMode = false, hideSignals = false,
       {/* Completed Trades */}
       {trades.length > 0 && (
         <div>
-          <h3 className="text-sm font-semibold mb-3 text-slate-300 uppercase tracking-wide">Recent Trades</h3>
-          <div className="overflow-x-auto max-h-48 overflow-y-auto bg-slate-800/30 rounded-lg border border-slate-700/50">
-            <table className="w-full text-xs">
+          <h3 className="text-xs sm:text-sm font-semibold mb-2 sm:mb-3 text-slate-300 uppercase tracking-wide">Recent Trades</h3>
+          <div className="overflow-x-auto max-h-48 overflow-y-auto bg-slate-800/30 rounded-lg border border-slate-700/50 -mx-4 sm:mx-0">
+            <table className="min-w-full text-xs">
               <thead className="bg-slate-800/50 text-slate-300 sticky top-0 border-b border-slate-700/50">
                 <tr>
-                  <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Time</th>
-                  <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Symbol</th>
-                  <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Side</th>
-                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Entry</th>
-                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Exit</th>
-                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">P&L</th>
-                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">P&L %</th>
-                  <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Reason</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold uppercase tracking-wider whitespace-nowrap">Time</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold uppercase tracking-wider whitespace-nowrap">Symbol</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold uppercase tracking-wider whitespace-nowrap">Side</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-right font-semibold uppercase tracking-wider whitespace-nowrap">Entry</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-right font-semibold uppercase tracking-wider whitespace-nowrap">Exit</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-right font-semibold uppercase tracking-wider whitespace-nowrap">P&L</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-right font-semibold uppercase tracking-wider whitespace-nowrap">P&L %</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold uppercase tracking-wider whitespace-nowrap">Reason</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-700/30">
                 {trades.slice(0, 10).map((trade, i) => (
                   <tr key={i} className="hover:bg-slate-700/20 transition-colors">
-                    <td className="px-4 py-3 text-slate-400">{formatTime(trade.exit_time)}</td>
-                    <td className="px-4 py-3 font-medium text-white">{trade.symbol}</td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-block px-2 py-1 rounded-lg text-xs font-semibold ${
+                    <td className="px-2 sm:px-4 py-2 sm:py-3 text-slate-400 whitespace-nowrap">{formatTime(trade.exit_time)}</td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-3 font-medium text-white whitespace-nowrap">{trade.symbol}</td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-3">
+                      <span className={`inline-block px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg text-xs font-semibold whitespace-nowrap ${
                         trade.side === 'long' 
                           ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
                           : 'bg-red-500/20 text-red-400 border border-red-500/30'
@@ -610,19 +634,19 @@ export default function LiveDashboard({ isLiveMode = false, hideSignals = false,
                         {trade.side.toUpperCase()}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-right font-mono text-slate-300">{formatPrice(trade.entry_price)}</td>
-                    <td className="px-4 py-3 text-right font-mono text-slate-300">{formatPrice(trade.exit_price)}</td>
-                    <td className={`px-4 py-3 text-right font-mono font-semibold ${
+                    <td className="px-2 sm:px-4 py-2 sm:py-3 text-right font-mono text-slate-300 whitespace-nowrap">{formatPrice(trade.entry_price)}</td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-3 text-right font-mono text-slate-300 whitespace-nowrap">{formatPrice(trade.exit_price)}</td>
+                    <td className={`px-2 sm:px-4 py-2 sm:py-3 text-right font-mono font-semibold whitespace-nowrap ${
                       trade.pnl >= 0 ? 'text-green-400' : 'text-red-400'
                     }`}>
                       {formatPrice(trade.pnl)}
                     </td>
-                    <td className={`px-4 py-3 text-right font-mono font-semibold ${
+                    <td className={`px-2 sm:px-4 py-2 sm:py-3 text-right font-mono font-semibold whitespace-nowrap ${
                       trade.pnl_pct >= 0 ? 'text-green-400' : 'text-red-400'
                     }`}>
                       {formatPercent(trade.pnl_pct)}
                     </td>
-                    <td className="px-4 py-3 text-slate-400">{trade.reason}</td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-3 text-slate-400 whitespace-nowrap">{trade.reason}</td>
                   </tr>
                 ))}
               </tbody>

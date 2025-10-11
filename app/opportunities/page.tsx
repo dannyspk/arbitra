@@ -9,7 +9,7 @@ export default function Page() {
       <div className="max-w-7xl mx-auto">
         <header className="mb-6 md:mb-8">
           <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-2">
-            Market Opportunities
+            Market Signals
           </h1>
           <p className="text-sm md:text-base text-slate-400">Discover trending pairs and hot market movers</p>
         </header>

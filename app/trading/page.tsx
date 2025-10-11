@@ -7,6 +7,7 @@ import SocialSentiment from '../../components/SocialSentiment'
 import ManualTradingPanel from '../../components/ManualTradingPanel'
 import LiveManualTradingPanel from '../../components/LiveManualTradingPanel'
 import { useLiveDashboardWebSocket } from '../../hooks/useLiveDashboardWebSocket'
+import StrategyTradeHistory from '../../components/StrategyTradeHistory'
 
 function useHotWs() {
   const [hot, setHot] = React.useState<any[]>([])
@@ -67,8 +68,8 @@ export default function TradingPage() {
   // Toggle between Order Placement and Manual Trading Panel
   const [isTestMode, setIsTestMode] = React.useState(false)
   
-  // Tab state - 'trading', 'strategies', or 'orders'
-  const [activeTab, setActiveTab] = React.useState<'trading' | 'strategies' | 'orders'>('trading')
+  // Tab state - 'trading', 'strategies', 'orders', or 'strategy-trades'
+  const [activeTab, setActiveTab] = React.useState<'trading' | 'strategies' | 'orders' | 'strategy-trades'>('trading')
   
   // Check if current symbol has active strategy
   const strategyRunning = activeStrategies.some(s => s.symbol === symbol)
@@ -541,11 +542,11 @@ export default function TradingPage() {
         <h2 className="text-xl md:text-2xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent ml-0 lg:ml-0">Trading</h2>
         
         {/* Tab Navigation */}
-        <div className="mb-6">
-          <div className="flex gap-2 bg-slate-900/50 rounded-lg p-1 border border-slate-700/50 inline-flex">
+        <div className="mb-6 overflow-x-auto">
+          <div className="flex gap-2 bg-slate-900/50 rounded-lg p-1 border border-slate-700/50 w-fit min-w-full sm:min-w-0">
             <button
               onClick={() => setActiveTab('trading')}
-              className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+              className={`px-3 sm:px-6 py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
                 activeTab === 'trading'
                   ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/20'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
@@ -555,7 +556,7 @@ export default function TradingPage() {
             </button>
             <button
               onClick={() => setActiveTab('strategies')}
-              className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+              className={`px-3 sm:px-6 py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
                 activeTab === 'strategies'
                   ? 'bg-gradient-to-r from-purple-600 to-violet-600 text-white shadow-lg shadow-purple-500/20'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
@@ -570,13 +571,23 @@ export default function TradingPage() {
             </button>
             <button
               onClick={() => setActiveTab('orders')}
-              className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+              className={`px-3 sm:px-6 py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
                 activeTab === 'orders'
                   ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/20'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
               }`}
             >
-              📜 Order History
+              📜 Orders
+            </button>
+            <button
+              onClick={() => setActiveTab('strategy-trades')}
+              className={`px-3 sm:px-6 py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+                activeTab === 'strategy-trades'
+                  ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-lg shadow-orange-500/20'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+              }`}
+            >
+              📊 Strategy Order History
             </button>
           </div>
         </div>
@@ -817,7 +828,7 @@ export default function TradingPage() {
                     
                     <div className="flex gap-2 bg-slate-800/50 rounded-lg p-1 border border-slate-700">
                       <button 
-                        className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                        className={`px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all duration-200 whitespace-nowrap ${
                         market === 'spot' 
                           ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/20' 
                           : 'text-slate-400 hover:text-white'
@@ -827,7 +838,7 @@ export default function TradingPage() {
                       Spot
                     </button>
                     <button 
-                      className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                      className={`px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all duration-200 whitespace-nowrap ${
                         market === 'futures' 
                           ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-lg shadow-amber-500/20' 
                           : 'text-slate-400 hover:text-white'
@@ -1242,9 +1253,9 @@ export default function TradingPage() {
                   {/* Strategy Type Selection */}
                   <div>
                     <label className="text-sm text-slate-400 block mb-2">Strategy Type</label>
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       <button 
-                        className={`px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                        className={`px-2 sm:px-4 py-3 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 ${
                           strategyMode === 'bear' 
                             ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg shadow-red-500/20' 
                             : 'bg-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-700'
@@ -1255,7 +1266,7 @@ export default function TradingPage() {
                         🐻 Bear
                       </button>
                       <button 
-                        className={`px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                        className={`px-2 sm:px-4 py-3 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 ${
                           strategyMode === 'bull' 
                             ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/20' 
                             : 'bg-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-700'
@@ -1266,7 +1277,7 @@ export default function TradingPage() {
                         🐂 Bull
                       </button>
                       <button 
-                        className={`px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                        className={`px-2 sm:px-4 py-3 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 ${
                           strategyMode === 'scalp' 
                             ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/20' 
                             : 'bg-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-700'
@@ -1277,7 +1288,7 @@ export default function TradingPage() {
                         ⚡ Scalp
                       </button>
                       <button 
-                        className={`px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                        className={`px-2 sm:px-4 py-3 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 ${
                           strategyMode === 'range' 
                             ? 'bg-gradient-to-r from-purple-600 to-violet-600 text-white shadow-lg shadow-purple-500/20' 
                             : 'bg-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-700'
@@ -1479,7 +1490,7 @@ export default function TradingPage() {
               </div>
 
               {/* Filters */}
-              <div className="flex gap-4 mb-4">
+              <div className="flex flex-col sm:flex-row gap-4 mb-4">
                 <div className="flex-1">
                   <label className="block text-xs font-semibold text-slate-400 mb-2">Filter by Symbol</label>
                   <input
@@ -1487,15 +1498,15 @@ export default function TradingPage() {
                     value={orderSymbolFilter}
                     onChange={(e) => setOrderSymbolFilter(e.target.value.toUpperCase())}
                     placeholder="e.g., MYXUSDT (leave empty for all)"
-                    className="w-full px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+                    className="w-full px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 text-sm"
                   />
                 </div>
-                <div>
+                <div className="sm:w-32">
                   <label className="block text-xs font-semibold text-slate-400 mb-2">Limit</label>
                   <select
                     value={orderLimit}
                     onChange={(e) => setOrderLimit(Number(e.target.value))}
-                    className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white focus:outline-none focus:border-cyan-500/50"
+                    className="w-full px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white focus:outline-none focus:border-cyan-500/50 text-sm"
                   >
                     <option value={50}>50</option>
                     <option value={100}>100</option>
@@ -1517,32 +1528,34 @@ export default function TradingPage() {
                   <p className="text-sm mt-2">Click Refresh to load order history</p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-slate-700/50">
-                        <th className="text-left py-3 px-4 text-slate-400 font-semibold">Time</th>
-                        <th className="text-left py-3 px-4 text-slate-400 font-semibold">Symbol</th>
-                        <th className="text-left py-3 px-4 text-slate-400 font-semibold">Side</th>
-                        <th className="text-left py-3 px-4 text-slate-400 font-semibold">Type</th>
-                        <th className="text-right py-3 px-4 text-slate-400 font-semibold">Price</th>
-                        <th className="text-right py-3 px-4 text-slate-400 font-semibold">Amount</th>
-                        <th className="text-right py-3 px-4 text-slate-400 font-semibold">Filled</th>
-                        <th className="text-left py-3 px-4 text-slate-400 font-semibold">Status</th>
-                        <th className="text-right py-3 px-4 text-slate-400 font-semibold">Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
+                <div className="overflow-x-auto -mx-6 px-6 sm:mx-0 sm:px-0">
+                  <div className="inline-block min-w-full align-middle">
+                    <div className="overflow-hidden">
+                      <table className="min-w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-slate-700/50">
+                            <th className="text-left py-3 px-2 sm:px-4 text-slate-400 font-semibold text-xs sm:text-sm whitespace-nowrap">Time</th>
+                            <th className="text-left py-3 px-2 sm:px-4 text-slate-400 font-semibold text-xs sm:text-sm whitespace-nowrap">Symbol</th>
+                            <th className="text-left py-3 px-2 sm:px-4 text-slate-400 font-semibold text-xs sm:text-sm whitespace-nowrap">Side</th>
+                            <th className="text-left py-3 px-2 sm:px-4 text-slate-400 font-semibold text-xs sm:text-sm whitespace-nowrap">Type</th>
+                            <th className="text-right py-3 px-2 sm:px-4 text-slate-400 font-semibold text-xs sm:text-sm whitespace-nowrap">Price</th>
+                            <th className="text-right py-3 px-2 sm:px-4 text-slate-400 font-semibold text-xs sm:text-sm whitespace-nowrap">Amount</th>
+                            <th className="text-right py-3 px-2 sm:px-4 text-slate-400 font-semibold text-xs sm:text-sm whitespace-nowrap">Filled</th>
+                            <th className="text-left py-3 px-2 sm:px-4 text-slate-400 font-semibold text-xs sm:text-sm whitespace-nowrap">Status</th>
+                            <th className="text-right py-3 px-2 sm:px-4 text-slate-400 font-semibold text-xs sm:text-sm whitespace-nowrap">Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
                       {orders
                         .filter(order => !orderSymbolFilter || order.symbol.toUpperCase().includes(orderSymbolFilter))
                         .map((order, idx) => (
                         <tr key={order.id || idx} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
-                          <td className="py-3 px-4 text-slate-300 text-xs">
-                            {order.datetime ? new Date(order.datetime).toLocaleString() : '-'}
+                          <td className="py-3 px-2 sm:px-4 text-slate-300 text-xs whitespace-nowrap">
+                            {order.datetime ? new Date(order.datetime).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}
                           </td>
-                          <td className="py-3 px-4 text-white font-medium">{order.symbol}</td>
-                          <td className="py-3 px-4">
-                            <span className={`px-2 py-1 rounded text-xs font-bold ${
+                          <td className="py-3 px-2 sm:px-4 text-white font-medium text-xs sm:text-sm whitespace-nowrap">{order.symbol}</td>
+                          <td className="py-3 px-2 sm:px-4">
+                            <span className={`px-2 py-1 rounded text-xs font-bold whitespace-nowrap ${
                               order.side === 'buy' 
                                 ? 'bg-green-400/20 text-green-400' 
                                 : 'bg-red-400/20 text-red-400'
@@ -1550,14 +1563,14 @@ export default function TradingPage() {
                               {order.side?.toUpperCase()}
                             </span>
                           </td>
-                          <td className="py-3 px-4 text-slate-300 uppercase text-xs">{order.type}</td>
-                          <td className="py-3 px-4 text-right text-slate-300">
+                          <td className="py-3 px-2 sm:px-4 text-slate-300 uppercase text-xs whitespace-nowrap">{order.type}</td>
+                          <td className="py-3 px-2 sm:px-4 text-right text-slate-300 text-xs sm:text-sm whitespace-nowrap">
                             ${order.average || order.price || 0}
                           </td>
-                          <td className="py-3 px-4 text-right text-slate-300">{order.amount || 0}</td>
-                          <td className="py-3 px-4 text-right text-slate-300">{order.filled || 0}</td>
-                          <td className="py-3 px-4">
-                            <span className={`px-2 py-1 rounded text-xs font-bold ${
+                          <td className="py-3 px-2 sm:px-4 text-right text-slate-300 text-xs sm:text-sm whitespace-nowrap">{order.amount || 0}</td>
+                          <td className="py-3 px-2 sm:px-4 text-right text-slate-300 text-xs sm:text-sm whitespace-nowrap">{order.filled || 0}</td>
+                          <td className="py-3 px-2 sm:px-4">
+                            <span className={`px-2 py-1 rounded text-xs font-bold whitespace-nowrap ${
                               order.status === 'closed' || order.status === 'filled'
                                 ? 'bg-green-400/20 text-green-400'
                                 : order.status === 'canceled'
@@ -1569,19 +1582,21 @@ export default function TradingPage() {
                               {order.status?.toUpperCase()}
                             </span>
                           </td>
-                          <td className="py-3 px-4 text-right text-white font-medium">
+                          <td className="py-3 px-2 sm:px-4 text-right text-white font-medium text-xs sm:text-sm whitespace-nowrap">
                             ${(order.cost || 0).toFixed(2)}
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
+                    </div>
+                  </div>
                 </div>
               )}
 
               {/* Summary */}
               {orders.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-slate-700/50 flex justify-between items-center text-sm">
+                <div className="mt-4 pt-4 border-t border-slate-700/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-sm">
                   <span className="text-slate-400">
                     Showing {orders.length} order{orders.length !== 1 ? 's' : ''}
                   </span>
@@ -1592,6 +1607,11 @@ export default function TradingPage() {
               )}
             </div>
           </div>
+
+        {/* Strategy Order History Tab Content */}
+        <div className="space-y-6" style={{ display: activeTab === 'strategy-trades' ? 'block' : 'none' }}>
+          <StrategyTradeHistory />
+        </div>
       </div>
     </div>
   )

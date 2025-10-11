@@ -133,6 +133,11 @@ export function useLiveDashboardWebSocket() {
               }))
               break
 
+            case 'ping':
+              // Keepalive ping from server - acknowledge silently
+              // Server sends these every 30s to keep connection alive
+              break
+
             case 'error':
               console.error('[WS] Error:', message.message)
               setData((prev) => ({

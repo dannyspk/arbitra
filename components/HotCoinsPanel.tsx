@@ -2,6 +2,12 @@
 
 import React from 'react'
 import Link from 'next/link'
+import SocialTractionPredictions from './SocialTractionPredictions'
+import VolumeSurgeDetector from './VolumeSurgeDetector'
+import BreakoutScanner from './BreakoutScanner'
+import FundingDivergence from './FundingDivergence'
+import CompositeMoverScore from './CompositeMoverScore'
+import ReversalDetection from './ReversalDetection'
 
 function useHotCoins() {
   const [hot, setHot] = React.useState<any[]>([])
@@ -30,7 +36,7 @@ function useHotCoins() {
 
 export default function HotCoinsPanel() {
   const hot = useHotCoins()
-  const [view, setView] = React.useState<'cards' | 'table'>('cards')
+  const [view, setView] = React.useState<'table' | 'predictions' | 'surges' | 'breakouts' | 'funding' | 'composite' | 'reversals'>('table')
   const [sortByChangeDesc, setSortByChangeDesc] = React.useState<boolean | null>(null)
   const [sortByVolDesc, setSortByVolDesc] = React.useState<boolean | null>(null)
   const [volMap, setVolMap] = React.useState<Record<string, { volatility?: number; ewma_volatility?: number }>>({})
@@ -257,166 +263,177 @@ export default function HotCoinsPanel() {
               <div className="flex items-center gap-3 mb-2">
                 <div className="h-10 w-1 bg-gradient-to-b from-cyan-400 via-blue-400 to-purple-400 rounded-full"></div>
                 <h3 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                  Market Overview
+                  Market Signals
                 </h3>
-                <span className="px-3 py-1 bg-cyan-500/20 text-cyan-300 text-xs font-semibold rounded-full border border-cyan-500/30">
-                  LIVE
-                </span>
-              </div>
-              <div className="text-sm text-slate-400 flex items-center gap-2">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-                Top by 24h volume (USDT spot) excluding top market-cap coins
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="px-4 py-2 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50">
-                <div className="text-xs text-slate-500 uppercase tracking-wider">Active Markets</div>
-                <div className="text-xl font-bold text-white">{hot.length}</div>
-              </div>
               <div className="flex gap-2 bg-slate-800/50 backdrop-blur-sm rounded-xl p-1 border border-slate-700/50">
                 <button 
-                  onClick={() => setView('cards')} 
+                  onClick={() => setView('composite')} 
                   className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
-                    view === 'cards' 
-                      ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/50' 
+                    view === 'composite' 
+                      ? 'bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white shadow-lg shadow-pink-500/50' 
                       : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
                   }`}
                 >
                   <span className="flex items-center gap-2">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    Cards
+                    🎯 Composite Index
                   </span>
                 </button>
+                
                 <button 
-                  onClick={() => setView('table')} 
+                  onClick={() => setView('predictions')} 
                   className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
-                    view === 'table' 
+                    view === 'predictions' 
+                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/50' 
+                      : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                    💎 Gem Finder
+                  </span>
+                </button>
+                
+                <button 
+                  onClick={() => setView('surges')} 
+                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                    view === 'surges' 
+                      ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/50' 
+                      : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    🔥 Volume Surges
+                  </span>
+                </button>
+                
+                <button 
+                  onClick={() => setView('breakouts')} 
+                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                    view === 'breakouts' 
                       ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/50' 
                       : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
                   }`}
                 >
                   <span className="flex items-center gap-2">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
-                    Table
+                    💥 Breakouts
+                  </span>
+                </button>
+                
+                <button 
+                  onClick={() => setView('funding')} 
+                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                    view === 'funding' 
+                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/50' 
+                      : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    💰 Funding
+                  </span>
+                </button>
+                
+                <button 
+                  onClick={() => setView('reversals')} 
+                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                    view === 'reversals' 
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/50' 
+                      : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    🔄 Reversals
                   </span>
                 </button>
               </div>
             </div>
           </div>
           
-          {/* Filter Controls */}
-          <div className="mt-4 flex items-center gap-3 bg-slate-800/30 backdrop-blur-sm rounded-lg p-3 border border-slate-700/30">
-            <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-            </svg>
-            <label className="text-sm font-medium text-slate-300">Minimum Volatility:</label>
-            <select 
-              className="px-3 py-1.5 bg-slate-700/50 text-slate-200 border border-slate-600/50 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all cursor-pointer" 
-              value={String(minVolFilterPct)} 
-              onChange={(e) => setMinVolFilterPct(Number(e.target.value))}
-            >
-              <option value={0}>Any</option>
-              <option value={25}>25%</option>
-              <option value={50}>50%</option>
-              <option value={100}>100%</option>
-              <option value={200}>200%</option>
-            </select>
-          </div>
+          {/* Filter Controls - only show for table view */}
+          {view === 'table' && (
+            <div className="mt-4 flex items-center gap-3 bg-slate-800/30 backdrop-blur-sm rounded-lg p-3 border border-slate-700/30">
+              <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+              <label className="text-sm font-medium text-slate-300">Minimum Volatility:</label>
+              <select 
+                className="px-3 py-1.5 bg-slate-700/50 text-slate-200 border border-slate-600/50 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all cursor-pointer" 
+                value={String(minVolFilterPct)} 
+                onChange={(e) => setMinVolFilterPct(Number(e.target.value))}
+              >
+                <option value={0}>Any</option>
+                <option value={25}>25%</option>
+                <option value={50}>50%</option>
+                <option value={100}>100%</option>
+                <option value={200}>200%</option>
+              </select>
+            </div>
+          )}
         </div>
       </div>
 
-      {view === 'cards' ? (
-        <div className="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {hot.slice(0, 20).map((h, i) => (
-            <div 
-              key={i} 
-              className="group relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-xl p-4 border border-slate-700/50 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/10 hover:-translate-y-1"
-            >
-              {/* Glow effect on hover */}
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 to-purple-500/0 group-hover:from-cyan-500/5 group-hover:to-purple-500/5 rounded-xl transition-all duration-300"></div>
-              
-              <div className="relative z-10">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <div className="font-bold text-white text-lg">{h.base}</div>
-                    <div className="text-xs text-slate-400">/ USDT</div>
-                  </div>
-                  <div className="px-2 py-0.5 bg-slate-700/50 rounded text-xs text-slate-400">
-                    #{h.rank}
-                  </div>
-                </div>
-
-                {/* Price */}
-                <div className="mb-3 pb-3 border-b border-slate-700/50">
-                  <div className="text-xs text-slate-500 mb-1">Last Price</div>
-                  <div className="text-xl font-bold text-white">
-                    {h.last ? Number(h.last).toLocaleString(undefined, { maximumFractionDigits: 8 }) : 'N/A'}
-                  </div>
-                </div>
-
-                {/* Stats Grid */}
-                <div className="space-y-2 mb-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-slate-500">24h Volume</span>
-                    <span className="text-xs font-semibold text-slate-300">
-                      ${h.quoteVolume ? (Number(h.quoteVolume) / 1e6).toFixed(2) + 'M' : '0'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-slate-500">Market Cap</span>
-                    <span className="text-xs font-semibold text-slate-300">
-                      {(() => {
-                        const mc = getMarketCap(h)
-                        return mc ? '$' + (mc / 1e6).toFixed(1) + 'M' : '—'
-                      })()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-slate-500">24h Change</span>
-                    <span className={`text-sm font-bold flex items-center gap-1 ${
-                      h.change24h && h.change24h > 0 
-                        ? 'text-green-400' 
-                        : (h.change24h && h.change24h < 0 ? 'text-red-400' : 'text-slate-400')
-                    }`}>
-                      {h.change24h && h.change24h > 0 ? '↑' : (h.change24h && h.change24h < 0 ? '↓' : '')}
-                      {h.change24h != null ? Math.abs(Number(h.change24h)).toFixed(2) + '%' : '—'}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-2 pt-3 border-t border-slate-700/50">
-                  {h.symbol ? (
-                    <>
-                      <Link 
-                        href={`/trading?symbol=${encodeURIComponent(String(h.symbol))}&market=spot`} 
-                        className="flex-1 px-3 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-xs font-semibold rounded-lg transition-all duration-200 text-center shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40"
-                      >
-                        Spot
-                      </Link>
-                      <Link 
-                        href={`/trading?symbol=${encodeURIComponent(String(h.symbol))}&market=futures`} 
-                        className="flex-1 px-3 py-2 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white text-xs font-semibold rounded-lg transition-all duration-200 text-center shadow-lg shadow-amber-500/20 hover:shadow-amber-500/40"
-                      >
-                        Futures
-                      </Link>
-                    </>
-                  ) : (
-                    <div className="text-xs text-slate-500 text-center py-2">Not tradable</div>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
+      {/* Social Traction Predictions */}
+      {view === 'predictions' && (
+        <div className="p-6">
+          <SocialTractionPredictions />
         </div>
-      ) : (
+      )}
+
+      {/* Volume Surge Detection */}
+      {view === 'surges' && (
+        <div className="p-6">
+          <VolumeSurgeDetector />
+        </div>
+      )}
+
+      {/* Breakout Scanner */}
+      {view === 'breakouts' && (
+        <div className="p-6">
+          <BreakoutScanner />
+        </div>
+      )}
+
+      {/* Funding Divergence */}
+      {view === 'funding' && (
+        <div className="p-6">
+          <FundingDivergence />
+        </div>
+      )}
+
+      {/* Reversal Detection */}
+      {view === 'reversals' && (
+        <div className="p-6">
+          <ReversalDetection />
+        </div>
+      )}
+
+      {/* Composite Big Mover Score */}
+      {view === 'composite' && (
+        <div className="p-6">
+          <CompositeMoverScore />
+        </div>
+      )}
+
+      {view === 'table' && (
         <div className="p-6 overflow-auto">
           <table className="w-full table-auto">
             <thead>
@@ -475,7 +492,7 @@ export default function HotCoinsPanel() {
             </thead>
             <tbody className="divide-y divide-slate-700/30">
               {(() => {
-                let list = hot.slice(0, 20)
+                let list = hot.slice(0, 4)
                 // apply min-vol filter first
                 if (minVolFilterPct > 0) {
                   list = list.filter((it: any) => {

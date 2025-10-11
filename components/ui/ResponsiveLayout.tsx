@@ -1,13 +1,28 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, createContext, useContext } from 'react'
 import Sidebar from './Sidebar'
+
+// Create context for sidebar state
+const SidebarContext = createContext<{
+  sidebarOpen: boolean
+  setSidebarOpen: (open: boolean) => void
+} | null>(null)
+
+export const useSidebar = () => {
+  const context = useContext(SidebarContext)
+  if (!context) {
+    throw new Error('useSidebar must be used within ResponsiveLayout')
+  }
+  return context
+}
 
 export default function ResponsiveLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <SidebarContext.Provider value={{ sidebarOpen, setSidebarOpen }}>
+      <div className="flex h-screen overflow-hidden">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div 
@@ -29,7 +44,7 @@ export default function ResponsiveLayout({ children }: { children: React.ReactNo
             <div className="flex items-center gap-2">
               <img 
                 src="/arbitrage-logo.png" 
-                alt="Arbitrage" 
+                alt="Arbitras" 
                 className="h-14 w-auto items-center"
                 onError={(e) => {
                   // Fallback to text if image fails to load
@@ -43,7 +58,7 @@ export default function ResponsiveLayout({ children }: { children: React.ReactNo
                 className="text-xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(34,211,238,0.3)]"
                 style={{ display: 'none' }}
               >
-                Arbitrage
+                Arbitras
               </span>
             </div>
             {/* Close button for mobile */}
@@ -62,18 +77,9 @@ export default function ResponsiveLayout({ children }: { children: React.ReactNo
 
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden w-full">
-        {/* Hamburger menu button - only visible on mobile */}
-        <button
-          onClick={() => setSidebarOpen(true)}
-          className="lg:hidden fixed top-4 left-4 z-30 p-2 bg-slate-900/90 backdrop-blur-sm border border-slate-700 rounded-lg shadow-lg hover:bg-slate-800 transition-colors"
-        >
-          <svg className="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-
         {children}
       </div>
     </div>
+    </SidebarContext.Provider>
   )
 }
