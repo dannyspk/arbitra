@@ -308,26 +308,26 @@ export default function CompositeMoverScore() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 p-6">
+    <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 p-3 sm:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-            🎯 Big Mover Score
-            <span className="text-xs font-normal text-slate-400 ml-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-white flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+            <span>🎯 Big Mover Score</span>
+            <span className="text-xs font-normal text-slate-400">
               (All Signals Combined)
             </span>
           </h2>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
             Ultimate accuracy: Volume + Breakouts + Funding + Momentum
           </p>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
           {/* Symbol Selector - Searchable */}
-          <div className="flex items-center gap-2 bg-slate-800/50 rounded-lg px-3 py-1.5">
-            <span className="text-xs text-slate-400">Symbol:</span>
-            <div className="relative" ref={dropdownRef}>
+          <div className="flex items-center gap-2 bg-slate-800/50 rounded-lg px-2 sm:px-3 py-1.5">
+            <span className="text-xs text-slate-400 hidden sm:inline">Symbol:</span>
+            <div className="relative flex-1 sm:flex-initial" ref={dropdownRef}>
               <input
                 ref={inputRef}
                 type="text"
@@ -343,7 +343,7 @@ export default function CompositeMoverScore() {
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder={selectedSymbol || "Search trading pair..."}
-                className="bg-slate-700 text-white text-xs rounded px-2 py-1 outline-none min-w-[180px] focus:ring-2 focus:ring-purple-500"
+                className="bg-slate-700 text-white text-xs rounded px-2 py-1 outline-none w-full sm:min-w-[180px] focus:ring-2 focus:ring-purple-500"
               />
               
               {/* Dropdown Menu */}
@@ -450,12 +450,12 @@ export default function CompositeMoverScore() {
           )}
           
           {/* Min Score Selector */}
-          <div className="flex items-center gap-2 bg-slate-800/50 rounded-lg px-3 py-1.5">
-            <span className="text-xs text-slate-400">Min Score:</span>
+          <div className="flex items-center gap-2 bg-slate-800/50 rounded-lg px-2 sm:px-3 py-1.5">
+            <span className="text-xs text-slate-400 whitespace-nowrap">Min Score:</span>
             <select
               value={minScore}
               onChange={(e) => setMinScore(Number(e.target.value))}
-              className="bg-slate-700 text-white text-xs rounded px-2 py-1 outline-none"
+              className="bg-slate-700 text-white text-xs rounded px-2 py-1 outline-none w-full sm:w-auto"
             >
               <option value={30}>30+</option>
               <option value={60}>60+</option>
@@ -467,7 +467,7 @@ export default function CompositeMoverScore() {
           
           <button
             onClick={() => setAutoRefresh(!autoRefresh)}
-            className={`px-3 py-1.5 text-xs rounded-lg transition ${
+            className={`px-3 py-1.5 text-xs rounded-lg transition whitespace-nowrap ${
               autoRefresh 
                 ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
                 : 'bg-slate-700 text-slate-400 border border-slate-600'
@@ -524,30 +524,30 @@ export default function CompositeMoverScore() {
               <div className="space-y-4">
                 {/* Show composite card if in movers list */}
                 {mover && (
-                  <div className="rounded-xl p-6 border-2 bg-gradient-to-br from-slate-800/50 to-slate-900/50"
+                  <div className="rounded-xl p-4 sm:p-6 border-2 bg-gradient-to-br from-slate-800/50 to-slate-900/50"
                     style={{
                       borderImage: `linear-gradient(135deg, ${getSignalColor(mover.signal)}) 1`
                     }}
                   >
                     {/* Header */}
-                    <div className="flex items-start justify-between mb-6">
-                      <div className="flex items-center gap-4">
-                        <div className={`flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br ${getSignalColor(mover.signal)} text-white font-bold text-2xl`}>
+                    <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4 sm:mb-6">
+                      <div className="flex items-center gap-3 sm:gap-4">
+                        <div className={`flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br ${getSignalColor(mover.signal)} text-white font-bold text-xl sm:text-2xl`}>
                           {mover.base.charAt(0)}
                         </div>
                         <div>
                           <Link 
                             href={`/trading?symbol=${mover.symbol}`}
-                            className="text-3xl font-bold text-white hover:text-purple-400 transition flex items-center gap-2"
+                            className="text-2xl sm:text-3xl font-bold text-white hover:text-purple-400 transition flex items-center gap-2"
                           >
                             {mover.base}
                           </Link>
-                          <p className="text-slate-400 text-sm mt-1">{mover.symbol}</p>
+                          <p className="text-slate-400 text-xs sm:text-sm mt-1">{mover.symbol}</p>
                         </div>
                       </div>
                       
-                      <div className="text-right">
-                        <div className="text-4xl font-bold text-white mb-2">
+                      <div className="text-left sm:text-right w-full sm:w-auto">
+                        <div className="text-3xl sm:text-4xl font-bold text-white mb-2">
                           {mover.composite_score.toFixed(1)}
                         </div>
                         <span className={`text-xs px-3 py-1 rounded-full font-semibold border ${getSignalBadgeColor(mover.signal)}`}>
@@ -557,20 +557,20 @@ export default function CompositeMoverScore() {
                     </div>
                     
                     {/* Active Signals Pills */}
-                    <div className="flex flex-wrap gap-2 mb-6">
+                    <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
                       <span className="text-xs text-slate-400 mr-2">Active Signals:</span>
                       {mover.active_signals.map((sig, idx) => (
-                        <span key={idx} className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs border border-purple-500/30">
+                        <span key={idx} className="px-2 sm:px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs border border-purple-500/30">
                           {sig}
                         </span>
                       ))}
                     </div>
                     
                     {/* Score Breakdown Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                      <div className="bg-slate-800/50 rounded-lg p-4">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
+                      <div className="bg-slate-800/50 rounded-lg p-3 sm:p-4">
                         <div className="text-xs text-slate-400 mb-1">Volume Score</div>
-                        <div className="text-2xl font-bold text-cyan-400">
+                        <div className="text-xl sm:text-2xl font-bold text-cyan-400">
                           {mover.breakdown.volume_contribution.toFixed(1)}
                         </div>
                         {mover.individual_scores.volume_surge !== null && (
@@ -580,9 +580,9 @@ export default function CompositeMoverScore() {
                         )}
                       </div>
                       
-                      <div className="bg-slate-800/50 rounded-lg p-4">
+                      <div className="bg-slate-800/50 rounded-lg p-3 sm:p-4">
                         <div className="text-xs text-slate-400 mb-1">Breakout Score</div>
-                        <div className="text-2xl font-bold text-green-400">
+                        <div className="text-xl sm:text-2xl font-bold text-green-400">
                           {mover.breakdown.breakout_contribution.toFixed(1)}
                         </div>
                         {mover.individual_scores.breakout !== null && (
@@ -592,9 +592,9 @@ export default function CompositeMoverScore() {
                         )}
                       </div>
                       
-                      <div className="bg-slate-800/50 rounded-lg p-4">
+                      <div className="bg-slate-800/50 rounded-lg p-3 sm:p-4">
                         <div className="text-xs text-slate-400 mb-1">Funding Score</div>
-                        <div className="text-2xl font-bold text-yellow-400">
+                        <div className="text-xl sm:text-2xl font-bold text-yellow-400">
                           {mover.breakdown.funding_contribution.toFixed(1)}
                         </div>
                         {mover.individual_scores.funding_divergence !== null && (
@@ -604,9 +604,9 @@ export default function CompositeMoverScore() {
                         )}
                       </div>
                       
-                      <div className="bg-slate-800/50 rounded-lg p-4">
+                      <div className="bg-slate-800/50 rounded-lg p-3 sm:p-4">
                         <div className="text-xs text-slate-400 mb-1">Momentum Score</div>
-                        <div className="text-2xl font-bold text-orange-400">
+                        <div className="text-xl sm:text-2xl font-bold text-orange-400">
                           {mover.breakdown.momentum_contribution.toFixed(1)}
                         </div>
                         <div className="text-xs text-slate-500 mt-1">
@@ -616,29 +616,29 @@ export default function CompositeMoverScore() {
                     </div>
                     
                     {/* Stats Row */}
-                    <div className="grid grid-cols-3 gap-4 mb-4">
+                    <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
                       <div className="text-center">
                         <div className="text-xs text-slate-400">24h Change</div>
-                        <div className={`text-lg font-bold ${mover.price_change_24h > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        <div className={`text-base sm:text-lg font-bold ${mover.price_change_24h > 0 ? 'text-green-400' : 'text-red-400'}`}>
                           {mover.price_change_24h > 0 ? '+' : ''}{mover.price_change_24h.toFixed(2)}%
                         </div>
                       </div>
                       <div className="text-center">
                         <div className="text-xs text-slate-400">Market Cap</div>
-                        <div className="text-lg font-bold text-white">
+                        <div className="text-base sm:text-lg font-bold text-white">
                           {formatMarketCap(mover.market_cap)}
                         </div>
                       </div>
                       <div className="text-center">
                         <div className="text-xs text-slate-400">Signals</div>
-                        <div className="text-lg font-bold text-purple-400">
+                        <div className="text-base sm:text-lg font-bold text-purple-400">
                           {mover.signal_count}/3
                         </div>
                       </div>
                     </div>
                     
                     {/* Reason */}
-                    <div className="bg-slate-900/50 rounded-lg p-4">
+                    <div className="bg-slate-900/50 rounded-lg p-3 sm:p-4">
                       <div className="text-xs text-slate-400 mb-2">Analysis</div>
                       <p className="text-sm text-slate-300">{mover.reason}</p>
                     </div>
@@ -888,23 +888,23 @@ export default function CompositeMoverScore() {
                     
                     {/* Volume Signal */}
                     {signalData.volume && (
-                      <div className="bg-gradient-to-br from-orange-900/20 to-slate-900/50 border border-orange-500/30 rounded-lg p-4">
-                        <div className="flex items-start justify-between mb-3">
+                      <div className="bg-gradient-to-br from-orange-900/20 to-slate-900/50 border border-orange-500/30 rounded-lg p-3 sm:p-4">
+                        <div className="flex flex-col sm:flex-row items-start justify-between gap-3 mb-3">
                           <div className="flex items-center gap-2">
-                            <span className="text-2xl">📊</span>
+                            <span className="text-xl sm:text-2xl">📊</span>
                             <div>
-                              <h4 className="text-white font-bold">Volume Surge</h4>
+                              <h4 className="text-white font-bold text-sm sm:text-base">Volume Surge</h4>
                               <p className="text-xs text-slate-400">Unusual trading activity detected</p>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-orange-400">
+                          <div className="text-left sm:text-right w-full sm:w-auto">
+                            <div className="text-xl sm:text-2xl font-bold text-orange-400">
                               {signalData.volume.volume_surge_percentage?.toFixed(1)}%
                             </div>
                             <div className="text-xs text-slate-400">Surge</div>
                           </div>
                         </div>
-                        <div className="grid grid-cols-3 gap-3 mt-3">
+                        <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-3">
                           <div className="bg-slate-800/50 rounded p-2">
                             <div className="text-xs text-slate-400">Current Vol</div>
                             <div className="text-sm font-bold text-white">
@@ -1062,32 +1062,32 @@ export default function CompositeMoverScore() {
           {movers.map((mover, index) => (
             <div
               key={mover.symbol}
-              className="rounded-xl p-5 border-2 transition-all hover:border-purple-500/50 bg-gradient-to-br from-slate-800/50 to-slate-900/50 cursor-pointer"
+              className="rounded-xl p-4 sm:p-5 border-2 transition-all hover:border-purple-500/50 bg-gradient-to-br from-slate-800/50 to-slate-900/50 cursor-pointer"
               onClick={() => setSelectedSymbol(mover.symbol)}
               style={{
                 borderImage: `linear-gradient(135deg, from-slate-500 to-slate-600) 1`
               }}
             >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-lg">
+              <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4">
+                <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                  <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-base sm:text-lg shrink-0">
                     #{index + 1}
                   </div>
-                  <div>
-                    <div className="text-2xl font-bold text-white flex items-center gap-2">
-                      {mover.base}
-                      <span className="text-xs px-3 py-1 rounded-full font-semibold border bg-slate-500/30 text-slate-300 border-slate-400/70">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2 flex-wrap">
+                      <span className="truncate">{mover.base}</span>
+                      <span className="text-xs px-2 sm:px-3 py-1 rounded-full font-semibold border bg-slate-500/30 text-slate-300 border-slate-400/70 whitespace-nowrap">
                         {mover.signal}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs text-slate-500">
+                    <div className="flex items-center gap-2 mt-1 text-xs">
+                      <span className="text-slate-500">
                         {mover.signal_count} signal{mover.signal_count > 1 ? 's' : ''} active
                       </span>
                       {mover.market_cap && (
                         <>
                           <span className="text-slate-600">•</span>
-                          <span className="text-xs font-semibold text-slate-400">
+                          <span className="font-semibold text-slate-400">
                             {formatMarketCap(mover.market_cap)}
                           </span>
                         </>
@@ -1095,51 +1095,51 @@ export default function CompositeMoverScore() {
                     </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                <div className="text-left sm:text-right w-full sm:w-auto">
+                  <div className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                     {mover.composite_score.toFixed(0)}
                   </div>
                   <div className="text-xs text-slate-400 mt-1">Composite</div>
                 </div>
               </div>
 
-              <p className="text-sm text-slate-300 mb-4 p-3 bg-slate-800/30 rounded-lg border border-slate-700/50">
+              <p className="text-xs sm:text-sm text-slate-300 mb-3 sm:mb-4 p-2 sm:p-3 bg-slate-800/30 rounded-lg border border-slate-700/50">
                 {mover.reason}
               </p>
 
-              <div className="flex flex-wrap gap-2 mb-4">
+              <div className="flex flex-wrap gap-2 mb-3 sm:mb-4">
                 {mover.active_signals.map((sig, idx) => (
                   <span
                     key={idx}
-                    className="text-xs px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                    className="text-xs px-2 sm:px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30"
                   >
                     {sig}
                   </span>
                 ))}
               </div>
 
-              <div className="grid grid-cols-4 gap-3">
-                <div className="bg-slate-800/50 rounded-lg p-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+                <div className="bg-slate-800/50 rounded-lg p-2 sm:p-3">
                   <div className="text-xs text-slate-500 mb-1">Volume</div>
-                  <div className="text-lg font-bold text-orange-400">
+                  <div className="text-base sm:text-lg font-bold text-orange-400">
                     {mover.breakdown.volume_contribution.toFixed(1)}
                   </div>
                 </div>
-                <div className="bg-slate-800/50 rounded-lg p-3">
+                <div className="bg-slate-800/50 rounded-lg p-2 sm:p-3">
                   <div className="text-xs text-slate-500 mb-1">Breakout</div>
-                  <div className="text-lg font-bold text-cyan-400">
+                  <div className="text-base sm:text-lg font-bold text-cyan-400">
                     {mover.breakdown.breakout_contribution.toFixed(1)}
                   </div>
                 </div>
-                <div className="bg-slate-800/50 rounded-lg p-3">
+                <div className="bg-slate-800/50 rounded-lg p-2 sm:p-3">
                   <div className="text-xs text-slate-500 mb-1">Funding</div>
-                  <div className="text-lg font-bold text-pink-400">
+                  <div className="text-base sm:text-lg font-bold text-pink-400">
                     {mover.breakdown.funding_contribution.toFixed(1)}
                   </div>
                 </div>
-                <div className="bg-slate-800/50 rounded-lg p-3">
+                <div className="bg-slate-800/50 rounded-lg p-2 sm:p-3">
                   <div className="text-xs text-slate-500 mb-1">Momentum</div>
-                  <div className={`text-lg font-bold ${
+                  <div className={`text-base sm:text-lg font-bold ${
                     mover.price_change_24h > 0 ? 'text-green-400' : 'text-red-400'
                   }`}>
                     {mover.breakdown.momentum_contribution.toFixed(1)}

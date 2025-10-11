@@ -257,112 +257,82 @@ export default function HotCoinsPanel() {
       {/* Header with gradient overlay */}
       <div className="relative bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 backdrop-blur-sm border-b border-slate-700/50">
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 animate-pulse"></div>
-        <div className="relative p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="h-10 w-1 bg-gradient-to-b from-cyan-400 via-blue-400 to-purple-400 rounded-full"></div>
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                  Market Signals
-                </h3>
-              </div>
+        <div className="relative p-3 sm:p-6">
+          <div className="flex flex-col gap-3 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="h-8 sm:h-10 w-1 bg-gradient-to-b from-cyan-400 via-blue-400 to-purple-400 rounded-full"></div>
+              <h3 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+                Market Signals
+              </h3>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="flex gap-2 bg-slate-800/50 backdrop-blur-sm rounded-xl p-1 border border-slate-700/50">
+            
+            {/* Tab Navigation - Full width on mobile with better spacing */}
+            <div className="w-full overflow-x-auto scrollbar-hide -mx-3 px-3 sm:mx-0 sm:px-0">
+              <div className="flex gap-2 bg-slate-800/50 backdrop-blur-sm rounded-xl p-2 border border-slate-700/50 min-w-max">
                 <button 
                   onClick={() => setView('composite')} 
-                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                  className={`px-3 py-2 rounded-lg font-medium text-xs transition-all duration-200 whitespace-nowrap ${
                     view === 'composite' 
                       ? 'bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white shadow-lg shadow-pink-500/50' 
                       : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
                   }`}
                 >
-                  <span className="flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    🎯 Composite Index
-                  </span>
+                  🎯 Composite
                 </button>
                 
                 <button 
                   onClick={() => setView('predictions')} 
-                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                  className={`px-3 py-2 rounded-lg font-medium text-xs transition-all duration-200 whitespace-nowrap ${
                     view === 'predictions' 
                       ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/50' 
                       : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
                   }`}
                 >
-                  <span className="flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                    </svg>
-                    💎 Gem Finder
-                  </span>
+                  💎 Gems
                 </button>
                 
                 <button 
                   onClick={() => setView('surges')} 
-                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                  className={`px-3 py-2 rounded-lg font-medium text-xs transition-all duration-200 whitespace-nowrap ${
                     view === 'surges' 
                       ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/50' 
                       : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
                   }`}
                 >
-                  <span className="flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                    🔥 Volume Surges
-                  </span>
+                  🔥 Volume
                 </button>
                 
                 <button 
                   onClick={() => setView('breakouts')} 
-                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                  className={`px-3 py-2 rounded-lg font-medium text-xs transition-all duration-200 whitespace-nowrap ${
                     view === 'breakouts' 
                       ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/50' 
                       : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
                   }`}
                 >
-                  <span className="flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                    💥 Breakouts
-                  </span>
+                  💥 Breakouts
                 </button>
                 
                 <button 
                   onClick={() => setView('funding')} 
-                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                  className={`px-3 py-2 rounded-lg font-medium text-xs transition-all duration-200 whitespace-nowrap ${
                     view === 'funding' 
                       ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/50' 
                       : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
                   }`}
                 >
-                  <span className="flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    💰 Funding
-                  </span>
+                  💰 Funding
                 </button>
                 
                 <button 
                   onClick={() => setView('reversals')} 
-                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                  className={`px-3 py-2 rounded-lg font-medium text-xs transition-all duration-200 whitespace-nowrap ${
                     view === 'reversals' 
                       ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/50' 
                       : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
                   }`}
                 >
-                  <span className="flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    🔄 Reversals
-                  </span>
+                  🔄 Reversals
                 </button>
               </div>
             </div>
@@ -370,13 +340,13 @@ export default function HotCoinsPanel() {
           
           {/* Filter Controls - only show for table view */}
           {view === 'table' && (
-            <div className="mt-4 flex items-center gap-3 bg-slate-800/30 backdrop-blur-sm rounded-lg p-3 border border-slate-700/30">
-              <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 bg-slate-800/30 backdrop-blur-sm rounded-lg p-2 sm:p-3 border border-slate-700/30">
+              <svg className="w-4 h-4 text-slate-400 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
               </svg>
-              <label className="text-sm font-medium text-slate-300">Minimum Volatility:</label>
+              <label className="text-xs sm:text-sm font-medium text-slate-300">Minimum Volatility:</label>
               <select 
-                className="px-3 py-1.5 bg-slate-700/50 text-slate-200 border border-slate-600/50 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all cursor-pointer" 
+                className="w-full sm:w-auto px-3 py-1.5 bg-slate-700/50 text-slate-200 border border-slate-600/50 rounded-lg text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all cursor-pointer" 
                 value={String(minVolFilterPct)} 
                 onChange={(e) => setMinVolFilterPct(Number(e.target.value))}
               >
@@ -393,65 +363,66 @@ export default function HotCoinsPanel() {
 
       {/* Social Traction Predictions */}
       {view === 'predictions' && (
-        <div className="p-6">
+        <div className="p-3 sm:p-6">
           <SocialTractionPredictions />
         </div>
       )}
 
       {/* Volume Surge Detection */}
       {view === 'surges' && (
-        <div className="p-6">
+        <div className="p-3 sm:p-6">
           <VolumeSurgeDetector />
         </div>
       )}
 
       {/* Breakout Scanner */}
       {view === 'breakouts' && (
-        <div className="p-6">
+        <div className="p-3 sm:p-6">
           <BreakoutScanner />
         </div>
       )}
 
       {/* Funding Divergence */}
       {view === 'funding' && (
-        <div className="p-6">
+        <div className="p-3 sm:p-6">
           <FundingDivergence />
         </div>
       )}
 
       {/* Reversal Detection */}
       {view === 'reversals' && (
-        <div className="p-6">
+        <div className="p-3 sm:p-6">
           <ReversalDetection />
         </div>
       )}
 
       {/* Composite Big Mover Score */}
       {view === 'composite' && (
-        <div className="p-6">
+        <div className="p-3 sm:p-6">
           <CompositeMoverScore />
         </div>
       )}
 
       {view === 'table' && (
-        <div className="p-6 overflow-auto">
-          <table className="w-full table-auto">
+        <div className="p-3 sm:p-6 overflow-auto">
+          <table className="w-full table-auto min-w-[640px]">
             <thead>
               <tr className="border-b border-slate-700/50">
-                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Pair</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">Last Price</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">24h Volume</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">Market Cap</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Pair</th>
+                <th className="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">Price</th>
+                <th className="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider hidden sm:table-cell">24h Volume</th>
+                <th className="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider hidden lg:table-cell">Market Cap</th>
+                <th className="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">
                   <button 
-                    className="flex items-center gap-2 ml-auto hover:text-cyan-400 transition-colors" 
+                    className="flex items-center gap-1 sm:gap-2 ml-auto hover:text-cyan-400 transition-colors" 
                     onClick={() => {
                       if (sortByChangeDesc === null) setSortByChangeDesc(true)
                       else if (sortByChangeDesc === true) setSortByChangeDesc(false)
                       else setSortByChangeDesc(null)
                     }}
                   >
-                    <span>24h Change</span>
+                    <span className="hidden sm:inline">24h Change</span>
+                    <span className="sm:hidden">Change</span>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path 
                         d="M6 9l6 6 6-6" 
@@ -464,9 +435,9 @@ export default function HotCoinsPanel() {
                     </svg>
                   </button>
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <th className="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider hidden md:table-cell">
                   <button 
-                    className="flex items-center gap-2 ml-auto hover:text-cyan-400 transition-colors" 
+                    className="flex items-center gap-1 sm:gap-2 ml-auto hover:text-cyan-400 transition-colors" 
                     onClick={() => {
                       if (sortByVolDesc === null) setSortByVolDesc(true)
                       else if (sortByVolDesc === true) setSortByVolDesc(false)
@@ -486,8 +457,8 @@ export default function HotCoinsPanel() {
                     </svg>
                   </button>
                 </th>
-                <th className="px-4 py-3 text-center text-xs font-semibold text-slate-400 uppercase tracking-wider">Rank</th>
-                <th className="px-4 py-3 text-center text-xs font-semibold text-slate-400 uppercase tracking-wider">Actions</th>
+                <th className="px-2 sm:px-4 py-2 sm:py-3 text-center text-xs font-semibold text-slate-400 uppercase tracking-wider hidden lg:table-cell">Rank</th>
+                <th className="px-2 sm:px-4 py-2 sm:py-3 text-center text-xs font-semibold text-slate-400 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700/30">
@@ -531,37 +502,37 @@ export default function HotCoinsPanel() {
                 }
                 return list.map((h, i) => (
                 <tr key={i} className="group hover:bg-slate-800/50 transition-colors">
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center text-xs font-bold text-cyan-400">
+                  <td className="px-2 sm:px-4 py-3 sm:py-4">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center text-xs font-bold text-cyan-400">
                         {h.base?.substring(0, 2) || '??'}
                       </div>
                       <div>
-                        <div className="font-semibold text-white">{h.base}</div>
+                        <div className="font-semibold text-white text-sm sm:text-base">{h.base}</div>
                         <div className="text-xs text-slate-500">/ USDT</div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-4 text-right">
-                    <span className="font-mono text-white font-medium">
+                  <td className="px-2 sm:px-4 py-3 sm:py-4 text-right">
+                    <span className="font-mono text-white font-medium text-xs sm:text-sm">
                       {h.last ? Number(h.last).toLocaleString(undefined, { maximumFractionDigits: 8 }) : '—'}
                     </span>
                   </td>
-                  <td className="px-4 py-4 text-right">
-                    <span className="text-slate-300 font-medium">
+                  <td className="px-2 sm:px-4 py-3 sm:py-4 text-right hidden sm:table-cell">
+                    <span className="text-slate-300 font-medium text-xs sm:text-sm">
                       ${h.quoteVolume ? (Number(h.quoteVolume) / 1e6).toFixed(2) + 'M' : '0'}
                     </span>
                   </td>
-                  <td className="px-4 py-4 text-right">
-                    <span className="text-slate-300 font-medium">
+                  <td className="px-2 sm:px-4 py-3 sm:py-4 text-right hidden lg:table-cell">
+                    <span className="text-slate-300 font-medium text-xs sm:text-sm">
                       {(() => {
                         const mc = getMarketCap(h)
                         return mc ? '$' + (mc / 1e6).toFixed(1) + 'M' : '—'
                       })()}
                     </span>
                   </td>
-                  <td className="px-4 py-4 text-right">
-                    <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full font-bold text-sm ${
+                  <td className="px-2 sm:px-4 py-3 sm:py-4 text-right">
+                    <div className={`inline-flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-bold text-xs sm:text-sm ${
                       h.change24h && h.change24h > 0 
                         ? 'bg-green-500/10 text-green-400 border border-green-500/20' 
                         : (h.change24h && h.change24h < 0 
@@ -572,8 +543,8 @@ export default function HotCoinsPanel() {
                       {h.change24h != null ? Math.abs(Number(h.change24h)).toFixed(2) + '%' : '—'}
                     </div>
                   </td>
-                  <td className="px-4 py-4 text-right">
-                    <span className="text-purple-400 font-semibold">{(() => {
+                  <td className="px-2 sm:px-4 py-3 sm:py-4 text-right hidden md:table-cell">
+                    <span className="text-purple-400 font-semibold text-xs sm:text-sm">{(() => {
                     try {
                       const norm = (s: string | undefined | null) => (String(s || '')).toUpperCase().replace(/[^A-Z0-9]/g, '')
                       const candidates: string[] = []
@@ -617,23 +588,23 @@ export default function HotCoinsPanel() {
                     } catch (e) { return '—' }
                   })()}</span>
                   </td>
-                  <td className="px-4 py-4 text-center">
-                    <span className="px-2 py-1 bg-slate-700/30 rounded-lg text-slate-400 text-sm font-medium">
+                  <td className="px-2 sm:px-4 py-3 sm:py-4 text-center hidden lg:table-cell">
+                    <span className="px-2 py-1 bg-slate-700/30 rounded-lg text-slate-400 text-xs sm:text-sm font-medium">
                       #{h.rank}
                     </span>
                   </td>
-                  <td className="px-4 py-4">
+                  <td className="px-2 sm:px-4 py-3 sm:py-4">
                     {h.symbol ? (
-                      <div className="flex gap-2 justify-center">
+                      <div className="flex gap-1 sm:gap-2 justify-center">
                         <Link 
                           href={`/trading?symbol=${encodeURIComponent(String(h.symbol))}&market=spot`} 
-                          className="px-3 py-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg text-xs font-semibold transition-all duration-200 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40"
+                          className="px-2 sm:px-3 py-1 sm:py-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg text-xs font-semibold transition-all duration-200 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40"
                         >
                           Spot
                         </Link>
                         <Link 
                           href={`/trading?symbol=${encodeURIComponent(String(h.symbol))}&market=futures`} 
-                          className="px-3 py-1.5 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white rounded-lg text-xs font-semibold transition-all duration-200 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/40"
+                          className="px-2 sm:px-3 py-1 sm:py-1.5 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white rounded-lg text-xs font-semibold transition-all duration-200 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/40"
                         >
                           Futures
                         </Link>
