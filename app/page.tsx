@@ -329,67 +329,76 @@ export default function Page() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Top 5 Gainers */}
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-3 sm:mb-4">
+              <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
                 <span className="text-green-400">🚀</span> Top 5 Gainers
               </h2>
-              <span className="text-xs text-slate-400">Binance Futures 24h</span>
+              <span className="text-[10px] sm:text-xs text-slate-400">Binance Futures 24h</span>
             </div>
 
-            <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl border border-green-500/20 shadow-xl overflow-hidden">
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl sm:rounded-2xl border border-green-500/20 shadow-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-slate-700/50 bg-green-500/5">
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">#</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Symbol</th>
-                      <th className="px-4 py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">Price</th>
-                      <th className="px-4 py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">24h Change</th>
-                      <th className="px-4 py-3 text-center text-xs font-semibold text-slate-400 uppercase tracking-wider">Action</th>
+                      <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">#</th>
+                      <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">Symbol</th>
+                      <th className="px-2 sm:px-4 py-2 sm:py-3 text-right text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                        <span className="hidden sm:inline">Price</span>
+                        <span className="inline sm:hidden">$</span>
+                      </th>
+                      <th className="px-2 sm:px-4 py-2 sm:py-3 text-right text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                        <span className="hidden sm:inline">24h Change</span>
+                        <span className="inline sm:hidden">24h</span>
+                      </th>
+                      <th className="px-2 sm:px-4 py-2 sm:py-3 text-center text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                        <span className="hidden sm:inline">Action</span>
+                        <span className="inline sm:hidden">•</span>
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-700/30">
                     {loading ? (
                       <tr>
-                        <td colSpan={5} className="px-6 py-12 text-center">
-                          <div className="flex items-center justify-center gap-3">
-                            <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                            <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                            <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                        <td colSpan={5} className="px-4 sm:px-6 py-8 sm:py-12 text-center">
+                          <div className="flex items-center justify-center gap-2 sm:gap-3">
+                            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                           </div>
                         </td>
                       </tr>
                     ) : topGainers.length === 0 ? (
                       <tr>
-                        <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                        <td colSpan={5} className="px-4 sm:px-6 py-8 sm:py-12 text-center text-slate-500 text-xs sm:text-sm">
                           No data available
                         </td>
                       </tr>
                     ) : (
                       topGainers.map((coin, idx) => (
                         <tr key={idx} className="hover:bg-green-500/5 transition-colors">
-                          <td className="px-4 py-3">
-                            <span className="inline-flex items-center justify-center w-7 h-7 bg-gradient-to-br from-green-500/20 to-emerald-500/20 text-green-400 rounded-full font-bold text-sm">
+                          <td className="px-2 sm:px-4 py-2 sm:py-3">
+                            <span className="inline-flex items-center justify-center w-5 h-5 sm:w-7 sm:h-7 bg-gradient-to-br from-green-500/20 to-emerald-500/20 text-green-400 rounded-full font-bold text-[10px] sm:text-sm">
                               {idx + 1}
                             </span>
                           </td>
-                          <td className="px-4 py-3">
-                            <div className="font-bold text-white">{coin.symbol}</div>
+                          <td className="px-2 sm:px-4 py-2 sm:py-3">
+                            <div className="font-bold text-white text-xs sm:text-base">{coin.symbol}</div>
                           </td>
-                          <td className="px-4 py-3 text-right">
-                            <span className="text-slate-300 font-mono text-sm">
+                          <td className="px-2 sm:px-4 py-2 sm:py-3 text-right">
+                            <span className="text-slate-300 font-mono text-[10px] sm:text-sm">
                               ${coin.last.toFixed(coin.last < 1 ? 6 : 2)}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-right">
-                            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full font-bold text-sm bg-green-500/10 text-green-400 border border-green-500/20">
+                          <td className="px-2 sm:px-4 py-2 sm:py-3 text-right">
+                            <span className="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-3 py-0.5 sm:py-1 rounded-full font-bold text-[10px] sm:text-sm bg-green-500/10 text-green-400 border border-green-500/20">
                               ↑ +{coin.change24h.toFixed(2)}%
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-center">
+                          <td className="px-2 sm:px-4 py-2 sm:py-3 text-center">
                             <Link 
                               href={`/trading?symbol=${encodeURIComponent(coin.symbol)}`}
-                              className="inline-flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-lg text-xs font-semibold shadow-lg shadow-green-500/20 transition-all duration-200"
+                              className="inline-flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-1 sm:py-1.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-md sm:rounded-lg text-[10px] sm:text-xs font-semibold shadow-lg shadow-green-500/20 transition-all duration-200"
                             >
                               Trade
                             </Link>
@@ -405,67 +414,76 @@ export default function Page() {
 
           {/* Top 5 Losers */}
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-3 sm:mb-4">
+              <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
                 <span className="text-red-400">📉</span> Top 5 Losers
               </h2>
-              <span className="text-xs text-slate-400">Binance Futures 24h</span>
+              <span className="text-[10px] sm:text-xs text-slate-400">Binance Futures 24h</span>
             </div>
 
-            <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl border border-red-500/20 shadow-xl overflow-hidden">
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl sm:rounded-2xl border border-red-500/20 shadow-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-slate-700/50 bg-red-500/5">
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">#</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Symbol</th>
-                      <th className="px-4 py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">Price</th>
-                      <th className="px-4 py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">24h Change</th>
-                      <th className="px-4 py-3 text-center text-xs font-semibold text-slate-400 uppercase tracking-wider">Action</th>
+                      <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">#</th>
+                      <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">Symbol</th>
+                      <th className="px-2 sm:px-4 py-2 sm:py-3 text-right text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                        <span className="hidden sm:inline">Price</span>
+                        <span className="inline sm:hidden">$</span>
+                      </th>
+                      <th className="px-2 sm:px-4 py-2 sm:py-3 text-right text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                        <span className="hidden sm:inline">24h Change</span>
+                        <span className="inline sm:hidden">24h</span>
+                      </th>
+                      <th className="px-2 sm:px-4 py-2 sm:py-3 text-center text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                        <span className="hidden sm:inline">Action</span>
+                        <span className="inline sm:hidden">•</span>
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-700/30">
                     {loading ? (
                       <tr>
-                        <td colSpan={5} className="px-6 py-12 text-center">
-                          <div className="flex items-center justify-center gap-3">
-                            <div className="w-2 h-2 bg-red-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                            <div className="w-2 h-2 bg-red-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                            <div className="w-2 h-2 bg-red-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                        <td colSpan={5} className="px-4 sm:px-6 py-8 sm:py-12 text-center">
+                          <div className="flex items-center justify-center gap-2 sm:gap-3">
+                            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                           </div>
                         </td>
                       </tr>
                     ) : topLosers.length === 0 ? (
                       <tr>
-                        <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                        <td colSpan={5} className="px-4 sm:px-6 py-8 sm:py-12 text-center text-slate-500 text-xs sm:text-sm">
                           No data available
                         </td>
                       </tr>
                     ) : (
                       topLosers.map((coin, idx) => (
                         <tr key={idx} className="hover:bg-red-500/5 transition-colors">
-                          <td className="px-4 py-3">
-                            <span className="inline-flex items-center justify-center w-7 h-7 bg-gradient-to-br from-red-500/20 to-rose-500/20 text-red-400 rounded-full font-bold text-sm">
+                          <td className="px-2 sm:px-4 py-2 sm:py-3">
+                            <span className="inline-flex items-center justify-center w-5 h-5 sm:w-7 sm:h-7 bg-gradient-to-br from-red-500/20 to-rose-500/20 text-red-400 rounded-full font-bold text-[10px] sm:text-sm">
                               {idx + 1}
                             </span>
                           </td>
-                          <td className="px-4 py-3">
-                            <div className="font-bold text-white">{coin.symbol}</div>
+                          <td className="px-2 sm:px-4 py-2 sm:py-3">
+                            <div className="font-bold text-white text-xs sm:text-base">{coin.symbol}</div>
                           </td>
-                          <td className="px-4 py-3 text-right">
-                            <span className="text-slate-300 font-mono text-sm">
+                          <td className="px-2 sm:px-4 py-2 sm:py-3 text-right">
+                            <span className="text-slate-300 font-mono text-[10px] sm:text-sm">
                               ${coin.last.toFixed(coin.last < 1 ? 6 : 2)}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-right">
-                            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full font-bold text-sm bg-red-500/10 text-red-400 border border-red-500/20">
+                          <td className="px-2 sm:px-4 py-2 sm:py-3 text-right">
+                            <span className="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-3 py-0.5 sm:py-1 rounded-full font-bold text-[10px] sm:text-sm bg-red-500/10 text-red-400 border border-red-500/20">
                               ↓ {coin.change24h.toFixed(2)}%
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-center">
+                          <td className="px-2 sm:px-4 py-2 sm:py-3 text-center">
                             <Link 
                               href={`/trading?symbol=${encodeURIComponent(coin.symbol)}`}
-                              className="inline-flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white rounded-lg text-xs font-semibold shadow-lg shadow-red-500/20 transition-all duration-200"
+                              className="inline-flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-1 sm:py-1.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white rounded-md sm:rounded-lg text-[10px] sm:text-xs font-semibold shadow-lg shadow-red-500/20 transition-all duration-200"
                             >
                               Trade
                             </Link>

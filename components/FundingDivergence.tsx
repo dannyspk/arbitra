@@ -150,25 +150,25 @@ export default function FundingDivergence() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 p-6">
+    <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 p-3 sm:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-            💰 Funding Divergence
-            <span className="text-xs font-normal text-slate-400 ml-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-white flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+            <span>💰 Funding Divergence</span>
+            <span className="text-xs font-normal text-slate-400">
               (Futures Signals)
             </span>
           </h2>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
             Extreme funding rates signaling squeeze setups and reversals
           </p>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <button
             onClick={() => setAutoRefresh(!autoRefresh)}
-            className={`px-3 py-1.5 text-xs rounded-lg transition ${
+            className={`flex-1 sm:flex-initial px-2 sm:px-3 py-1.5 text-xs rounded-lg transition whitespace-nowrap ${
               autoRefresh 
                 ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
                 : 'bg-slate-700 text-slate-400 border border-slate-600'
@@ -180,7 +180,7 @@ export default function FundingDivergence() {
           <button
             onClick={fetchOpportunities}
             disabled={loading}
-            className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 disabled:bg-slate-700 text-white text-xs rounded-lg transition"
+            className="flex-1 sm:flex-initial px-2 sm:px-3 py-1.5 bg-purple-600 hover:bg-purple-700 disabled:bg-slate-700 text-white text-xs rounded-lg transition whitespace-nowrap"
           >
             {loading ? 'Scanning...' : 'Refresh'}
           </button>
@@ -211,18 +211,18 @@ export default function FundingDivergence() {
           {opportunities.map((opp) => (
             <div
               key={opp.symbol}
-              className={`rounded-xl p-4 border transition-all hover:border-purple-500/50 ${
+              className={`rounded-xl p-3 sm:p-4 border transition-all hover:border-purple-500/50 ${
                 getSignalColor(opp.signal)
               }`}
             >
-              <div className="flex items-start justify-between">
+              <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
                 {/* Left: Symbol & Direction */}
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">{getDirectionIcon(opp.trade_direction)}</span>
+                <div className="flex-1 w-full">
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    <span className="text-xl sm:text-2xl">{getDirectionIcon(opp.trade_direction)}</span>
                     <Link 
                       href={`/trading?symbol=${opp.symbol.replace('USDT', '')}`}
-                      className="text-xl font-bold text-white hover:text-purple-400 transition"
+                      className="text-lg sm:text-xl font-bold text-white hover:text-purple-400 transition"
                     >
                       {opp.base}
                     </Link>
@@ -242,12 +242,12 @@ export default function FundingDivergence() {
                   </div>
 
                   {/* Reason */}
-                  <p className="text-sm text-slate-300 mb-3">
+                  <p className="text-xs sm:text-sm text-slate-300 mb-3">
                     {opp.reason}
                   </p>
 
                   {/* Metrics Grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 text-xs">
                     <div>
                       <div className="text-slate-500 mb-1">Funding Rate</div>
                       <div className={`font-bold ${
@@ -297,13 +297,15 @@ export default function FundingDivergence() {
                 </div>
 
                 {/* Right: Price & Market Cap */}
-                <div className="text-right ml-4">
-                  <div className="text-xs text-slate-500 mb-1">Price</div>
-                  <div className="text-sm font-mono text-white mb-2">
-                    ${opp.current_price.toFixed(4)}
+                <div className="flex sm:flex-col gap-4 sm:gap-0 sm:text-right w-full sm:w-auto sm:ml-4">
+                  <div className="flex-1 sm:flex-initial">
+                    <div className="text-xs text-slate-500 mb-1">Price</div>
+                    <div className="text-sm font-mono text-white mb-0 sm:mb-2">
+                      ${opp.current_price.toFixed(4)}
+                    </div>
                   </div>
                   {opp.market_cap && (
-                    <>
+                    <div className="flex-1 sm:flex-initial">
                       <div className="text-xs text-slate-500 mb-1">MCap</div>
                       <div className={`text-xs font-semibold ${
                         opp.market_cap && opp.market_cap < 100_000_000 ? 'text-green-400' :
@@ -312,13 +314,13 @@ export default function FundingDivergence() {
                       }`}>
                         {formatMarketCap(opp.market_cap)}
                       </div>
-                    </>
+                    </div>
                   )}
                 </div>
               </div>
 
               {/* Additional Details */}
-              <div className="mt-3 pt-3 border-t border-slate-700/50 grid grid-cols-2 gap-2 text-xs">
+              <div className="mt-3 pt-3 border-t border-slate-700/50 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                 <div>
                   <span className="text-slate-500">Open Interest: </span>
                   <span className="text-slate-300 font-semibold">{opp.open_interest.toFixed(0)} contracts</span>
@@ -338,7 +340,7 @@ export default function FundingDivergence() {
       )}
 
       {/* Info Footer */}
-      <div className="mt-6 pt-4 border-t border-slate-700/50">
+      <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-slate-700/50">
         <div className="text-xs text-slate-500 space-y-1">
           <p>💡 <strong>Mean Reversion:</strong> Extreme funding + stable price = reversal likely (opposite direction)</p>
           <p>🚀 <strong>Squeeze:</strong> Extreme funding opposite to price = trapped positions = explosive move</p>

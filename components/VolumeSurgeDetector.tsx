@@ -157,25 +157,25 @@ export default function VolumeSurgeDetector() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 p-6">
+    <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 p-3 sm:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-            📊 Volume Surge Detection
-            <span className="text-xs font-normal text-slate-400 ml-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-white flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+            <span>📊 Volume Surge Detection</span>
+            <span className="text-xs font-normal text-slate-400">
               (Early Mover Signals)
             </span>
           </h2>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
             Volume spikes before price moves - catch the early accumulation phase
           </p>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <button
             onClick={() => setAutoRefresh(!autoRefresh)}
-            className={`px-3 py-1.5 text-xs rounded-lg transition ${
+            className={`px-2 sm:px-3 py-1.5 text-xs rounded-lg transition whitespace-nowrap ${
               autoRefresh 
                 ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
                 : 'bg-slate-700 text-slate-400 border border-slate-600'
@@ -187,7 +187,7 @@ export default function VolumeSurgeDetector() {
           <button
             onClick={fetchSurges}
             disabled={loading}
-            className="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-700 disabled:bg-slate-700 text-white text-xs rounded-lg transition"
+            className="px-2 sm:px-3 py-1.5 bg-cyan-600 hover:bg-cyan-700 disabled:bg-slate-700 text-white text-xs rounded-lg transition whitespace-nowrap"
           >
             {loading ? 'Scanning...' : 'Refresh'}
           </button>
@@ -218,18 +218,18 @@ export default function VolumeSurgeDetector() {
           {surges.map((surge, index) => (
             <div
               key={surge.symbol}
-              className={`rounded-xl p-4 border transition-all hover:border-cyan-500/50 ${
+              className={`rounded-xl p-3 sm:p-4 border transition-all hover:border-cyan-500/50 ${
                 getSignalColor(surge.signal)
               }`}
             >
-              <div className="flex items-start justify-between">
+              <div className="flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-0">
                 {/* Left: Symbol & Signal */}
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">{getSignalIcon(surge.signal)}</span>
+                <div className="flex-1 w-full sm:w-auto">
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    <span className="text-xl sm:text-2xl">{getSignalIcon(surge.signal)}</span>
                     <Link 
                       href={`/trading?symbol=${surge.symbol}`}
-                      className="text-xl font-bold text-white hover:text-cyan-400 transition"
+                      className="text-lg sm:text-xl font-bold text-white hover:text-cyan-400 transition"
                     >
                       {surge.base}
                     </Link>
@@ -251,23 +251,23 @@ export default function VolumeSurgeDetector() {
                   </div>
 
                   {/* Reason */}
-                  <p className="text-sm text-slate-300 mb-3">
+                  <p className="text-xs sm:text-sm text-slate-300 mb-3">
                     {surge.reason}
                   </p>
 
                   {/* Metrics Grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 text-xs">
                     <div>
                       <div className="text-slate-500 mb-1">1h Surge</div>
-                      <div className="text-cyan-400 font-bold">{surge.surge_multiplier_1h}x</div>
+                      <div className="text-cyan-400 font-bold text-sm sm:text-base">{surge.surge_multiplier_1h}x</div>
                     </div>
                     <div>
                       <div className="text-slate-500 mb-1">4h Surge</div>
-                      <div className="text-purple-400 font-bold">{surge.surge_multiplier_4h}x</div>
+                      <div className="text-purple-400 font-bold text-sm sm:text-base">{surge.surge_multiplier_4h}x</div>
                     </div>
                     <div>
                       <div className="text-slate-500 mb-1">Price (1h)</div>
-                      <div className={`font-semibold ${
+                      <div className={`font-semibold text-sm sm:text-base ${
                         surge.price_change_1h > 0 ? 'text-green-400' : 
                         surge.price_change_1h < 0 ? 'text-red-400' : 
                         'text-slate-400'
@@ -288,7 +288,7 @@ export default function VolumeSurgeDetector() {
                             style={{ width: `${surge.confidence}%` }}
                           />
                         </div>
-                        <span className="text-white font-semibold w-10 text-right">
+                        <span className="text-white font-semibold w-8 sm:w-10 text-right text-xs sm:text-sm">
                           {surge.confidence.toFixed(0)}%
                         </span>
                       </div>
@@ -297,20 +297,24 @@ export default function VolumeSurgeDetector() {
                 </div>
 
                 {/* Right: Trend & Price */}
-                <div className="text-right ml-4">
-                  <div className="text-xs text-slate-500 mb-1">Trend</div>
-                  <div className="text-lg mb-2">
-                    {getTrendIcon(surge.volume_trend)}
+                <div className="text-left sm:text-right sm:ml-4 flex sm:flex-col gap-4 sm:gap-0">
+                  <div>
+                    <div className="text-xs text-slate-500 mb-1">Trend</div>
+                    <div className="text-base sm:text-lg">
+                      {getTrendIcon(surge.volume_trend)}
+                    </div>
                   </div>
-                  <div className="text-xs text-slate-500 mb-1">Price</div>
-                  <div className="text-sm font-mono text-white">
-                    ${surge.last_price.toFixed(4)}
+                  <div>
+                    <div className="text-xs text-slate-500 mb-1">Price</div>
+                    <div className="text-xs sm:text-sm font-mono text-white">
+                      ${surge.last_price.toFixed(4)}
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Additional Details (collapsible on mobile) */}
-              <div className="mt-3 pt-3 border-t border-slate-700/50 grid grid-cols-3 gap-2 text-xs">
+              <div className="mt-3 pt-3 border-t border-slate-700/50 grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
                 <div>
                   <span className="text-slate-500">1h Vol: </span>
                   <span className="text-cyan-400 font-mono">{formatVolume(surge.current_1h_volume)}</span>

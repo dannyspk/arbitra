@@ -153,12 +153,12 @@ export default function Topbar() {
   }, [])
 
   const modalContent = showAlertsModal ? (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4">
       <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowAlertsModal(false)} />
-      <div className="relative bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl max-w-2xl w-full mx-4 p-6 z-[10000] border border-slate-700">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Recent Alerts</h3>
-          <div className="flex items-center gap-2">
+      <div className="relative bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl sm:rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] sm:max-h-[85vh] overflow-hidden z-[10000] border border-slate-700 flex flex-col">
+        <div className="flex items-center justify-between p-3 sm:p-4 md:p-6 border-b border-slate-700/50 flex-shrink-0">
+          <h3 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Recent Alerts</h3>
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <button 
               onClick={() => {
                 try {
@@ -167,29 +167,29 @@ export default function Topbar() {
                   setRecentAlerts([])
                 } catch {}
               }} 
-              className="px-3 py-1.5 bg-slate-700/50 hover:bg-slate-700 text-slate-300 rounded-lg text-sm font-medium transition-all"
+              className="px-2 sm:px-3 py-1 sm:py-1.5 bg-slate-700/50 hover:bg-slate-700 text-slate-300 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap"
             >
-              Acknowledge all
+              Ack all
             </button>
             <button 
               onClick={() => setShowAlertsModal(false)} 
               className="text-slate-400 hover:text-white transition-colors p-1"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
         </div>
         {recentAlerts.length === 0 ? (
-          <div className="p-8 text-center text-slate-500">
-            <svg className="w-12 h-12 mx-auto mb-3 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="p-6 sm:p-8 text-center text-slate-500">
+            <svg className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
-            No recent alerts
+            <div className="text-sm sm:text-base">No recent alerts</div>
           </div>
         ) : (
-          <div className="space-y-3 max-h-96 overflow-auto pr-2">
+          <div className="space-y-2 sm:space-y-3 overflow-auto p-3 sm:p-4 md:p-6 flex-1">
             {recentAlerts.map((a, idx) => {
               // Parse alert data for better presentation
               const alertData = a.alerts?.[0] || {}
@@ -200,11 +200,11 @@ export default function Topbar() {
               const currentPrice = alertData.current_price || a.current_price
               
               return (
-                <div key={idx} className="p-4 border border-slate-700 rounded-xl bg-slate-800/50 hover:bg-slate-800/70 transition-all">
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="text-xs text-slate-500 font-mono">{
+                <div key={idx} className="p-3 sm:p-4 border border-slate-700 rounded-lg sm:rounded-xl bg-slate-800/50 hover:bg-slate-800/70 transition-all">
+                  <div className="flex items-start justify-between gap-2 sm:gap-3 mb-2 sm:mb-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 sm:mb-2">
+                        <div className="text-[10px] sm:text-xs text-slate-500 font-mono truncate">{
                           (() => {
                             try {
                               const raw = a.ts || ''
@@ -221,31 +221,31 @@ export default function Topbar() {
                           })()
                         }</div>
                       </div>
-                      <div className="text-base font-semibold text-white mb-2">{a.text || 'Alert'}</div>
+                      <div className="text-sm sm:text-base font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-2 break-words leading-relaxed">{a.text || 'Alert'}</div>
                       
                       {/* Alert Details Cards */}
                       {a.alerts && a.alerts.length > 0 && (
-                        <div className="grid grid-cols-2 gap-2 mt-3">
-                          <div className="bg-slate-900/70 rounded-lg p-3 border border-slate-700/50">
-                            <div className="text-xs text-slate-400 uppercase tracking-wide mb-1">Symbol</div>
-                            <div className="text-lg font-bold text-cyan-400">{symbol}</div>
-                            {market && <div className="text-xs text-slate-500 mt-0.5">{market}</div>}
+                        <div className="grid grid-cols-2 gap-1.5 sm:gap-2 mt-2 sm:mt-3">
+                          <div className="bg-slate-900/70 rounded-md sm:rounded-lg p-2 sm:p-3 border border-slate-700/50 hover:border-cyan-500/30 transition-colors">
+                            <div className="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wide mb-0.5 sm:mb-1 font-semibold">Symbol</div>
+                            <div className="text-sm sm:text-lg font-black bg-gradient-to-r from-cyan-400 to-cyan-300 bg-clip-text text-transparent truncate">{symbol}</div>
+                            {market && <div className="text-[10px] sm:text-xs text-slate-500 mt-0.5 truncate">{market}</div>}
                           </div>
-                          <div className="bg-slate-900/70 rounded-lg p-3 border border-slate-700/50">
-                            <div className="text-xs text-slate-400 uppercase tracking-wide mb-1">Change</div>
-                            <div className={`text-lg font-bold ${parseFloat(percent) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          <div className="bg-slate-900/70 rounded-md sm:rounded-lg p-2 sm:p-3 border border-slate-700/50 hover:border-green-500/30 transition-colors">
+                            <div className="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wide mb-0.5 sm:mb-1 font-semibold">Change</div>
+                            <div className={`text-sm sm:text-lg font-black ${parseFloat(percent) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                               {parseFloat(percent) >= 0 ? '+' : ''}{percent}
                             </div>
                           </div>
                           {(priceAgo || currentPrice) && (
                             <>
-                              <div className="bg-slate-900/70 rounded-lg p-3 border border-slate-700/50">
-                                <div className="text-xs text-slate-400 uppercase tracking-wide mb-1">Price 30min ago</div>
-                                <div className="text-sm font-mono text-slate-300">{priceAgo ? Number(priceAgo).toFixed(6) : 'N/A'}</div>
+                              <div className="bg-slate-900/70 rounded-md sm:rounded-lg p-2 sm:p-3 border border-slate-700/50 hover:border-purple-500/30 transition-colors">
+                                <div className="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wide mb-0.5 sm:mb-1 truncate font-semibold">Price 30min ago</div>
+                                <div className="text-xs sm:text-sm font-bold text-purple-300">{priceAgo ? Number(priceAgo).toFixed(6) : 'N/A'}</div>
                               </div>
-                              <div className="bg-slate-900/70 rounded-lg p-3 border border-slate-700/50">
-                                <div className="text-xs text-slate-400 uppercase tracking-wide mb-1">Current Price</div>
-                                <div className="text-sm font-mono text-slate-300">{currentPrice ? Number(currentPrice).toFixed(6) : 'N/A'}</div>
+                              <div className="bg-slate-900/70 rounded-md sm:rounded-lg p-2 sm:p-3 border border-slate-700/50 hover:border-blue-500/30 transition-colors">
+                                <div className="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wide mb-0.5 sm:mb-1 truncate font-semibold">Current Price</div>
+                                <div className="text-xs sm:text-sm font-bold text-blue-300">{currentPrice ? Number(currentPrice).toFixed(6) : 'N/A'}</div>
                               </div>
                             </>
                           )}
@@ -261,7 +261,7 @@ export default function Topbar() {
                           setRecentAlerts(prev => prev.filter(x => x.ts !== t))
                         } catch {}
                       }} 
-                      className="px-3 py-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg text-xs font-semibold transition-all shadow-lg shadow-cyan-500/20 flex-shrink-0"
+                      className="px-2 sm:px-3 py-1 sm:py-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-md sm:rounded-lg text-xs font-semibold transition-all shadow-lg shadow-cyan-500/20 flex-shrink-0 whitespace-nowrap"
                     >
                       Ack
                     </button>
@@ -269,11 +269,11 @@ export default function Topbar() {
                   
                   {/* Collapsible Raw Data */}
                   {a.alerts && (
-                    <details className="mt-3">
-                      <summary className="text-xs text-slate-400 cursor-pointer hover:text-cyan-400 transition-colors select-none">
+                    <details className="mt-2 sm:mt-3">
+                      <summary className="text-[10px] sm:text-xs text-slate-400 cursor-pointer hover:text-cyan-400 transition-colors select-none">
                         View raw data
                       </summary>
-                      <pre className="text-xs mt-2 p-3 bg-slate-900/70 rounded-lg overflow-auto border border-slate-700/50 text-slate-300 max-h-48">
+                      <pre className="text-[10px] sm:text-xs mt-2 p-2 sm:p-3 bg-slate-900/70 rounded-md sm:rounded-lg overflow-auto border border-slate-700/50 text-slate-300 max-h-32 sm:max-h-48">
                         {JSON.stringify(a.alerts, null, 2)}
                       </pre>
                     </details>

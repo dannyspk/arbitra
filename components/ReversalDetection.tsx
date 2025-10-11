@@ -216,24 +216,24 @@ export default function ReversalDetection() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 p-6">
+    <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 p-3 sm:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-            🔄 Reversal Detection
-            <span className="text-xs font-normal text-slate-400 ml-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-white flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+            <span>🔄 Reversal Detection</span>
+            <span className="text-xs font-normal text-slate-400">
               (Bottom & Top Signals)
             </span>
           </h2>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
             RSI + Moving Averages + Volume Analysis + Price Patterns
           </p>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
           {/* Symbol Search Dropdown */}
-          <div className="relative" ref={dropdownRef}>
+          <div className="relative flex-1 sm:flex-initial" ref={dropdownRef}>
             <div className="flex items-center gap-2">
               <input
                 ref={inputRef}
@@ -247,7 +247,7 @@ export default function ReversalDetection() {
                 }}
                 onFocus={() => setIsDropdownOpen(true)}
                 onKeyDown={handleKeyDown}
-                className="px-3 py-1.5 bg-slate-800/50 text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500/50 min-w-[200px]"
+                className="flex-1 sm:min-w-[200px] px-2 sm:px-3 py-1.5 bg-slate-800/50 text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500/50"
               />
               {selectedSymbol && (
                 <button
@@ -287,12 +287,12 @@ export default function ReversalDetection() {
           </div>
           
           {/* Signal Type Filter */}
-          <div className="flex items-center gap-2 bg-slate-800/50 rounded-lg px-3 py-1.5">
-            <span className="text-xs text-slate-400">Type:</span>
+          <div className="flex items-center gap-2 bg-slate-800/50 rounded-lg px-2 sm:px-3 py-1.5 flex-1 sm:flex-initial">
+            <span className="text-xs text-slate-400 whitespace-nowrap">Type:</span>
             <select
               value={signalType}
               onChange={(e) => setSignalType(e.target.value as 'bottom' | 'top' | 'both')}
-              className="bg-slate-700 text-white text-xs rounded px-2 py-1 outline-none"
+              className="flex-1 sm:flex-initial bg-slate-700 text-white text-xs rounded px-2 py-1 outline-none"
             >
               <option value="both">Both</option>
               <option value="bottom">Bottoms Only</option>
@@ -302,7 +302,7 @@ export default function ReversalDetection() {
           
           <button
             onClick={() => setAutoRefresh(!autoRefresh)}
-            className={`px-3 py-1.5 text-xs rounded-lg transition ${
+            className={`flex-1 sm:flex-initial px-2 sm:px-3 py-1.5 text-xs rounded-lg transition whitespace-nowrap ${
               autoRefresh 
                 ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
                 : 'bg-slate-700 text-slate-400 border border-slate-600'
@@ -331,28 +331,28 @@ export default function ReversalDetection() {
 
       {/* Results Grid */}
       {reversal && (
-        <div className="space-y-4">
-          <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {/* Bottom Signal */}
             {reversal.bottom_signal && (signalType === 'both' || signalType === 'bottom') && (
-              <div className="bg-gradient-to-br from-blue-900/20 to-slate-900/50 border border-blue-500/30 rounded-lg p-5 hover:border-blue-500/50 transition">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 text-white font-bold text-lg">
+              <div className="bg-gradient-to-br from-blue-900/20 to-slate-900/50 border border-blue-500/30 rounded-lg p-3 sm:p-5 hover:border-blue-500/50 transition">
+                <div className="flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-0 mb-3 sm:mb-4">
+                  <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                    <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 text-white font-bold text-base sm:text-lg flex-shrink-0">
                       📉
                     </div>
-                    <div>
+                    <div className="flex-1 sm:flex-initial">
                       <Link 
                         href={`/trading?symbol=${reversal.symbol}`}
-                        className="text-2xl font-bold text-white hover:text-blue-400 transition"
+                        className="text-xl sm:text-2xl font-bold text-white hover:text-blue-400 transition"
                       >
                         {reversal.symbol.replace('USDT', '')}
                       </Link>
                       <p className="text-xs text-slate-400 mt-1">Potential BOTTOM - Buy Opportunity</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-4xl font-bold text-blue-400">
+                  <div className="sm:text-right">
+                    <div className="text-3xl sm:text-4xl font-bold text-blue-400">
                       {reversal.bottom_signal.score.toFixed(0)}
                     </div>
                     <div className="text-xs text-slate-400 mt-1">Score</div>
@@ -360,10 +360,10 @@ export default function ReversalDetection() {
                 </div>
 
                 {/* Metrics */}
-                <div className="grid grid-cols-4 gap-3 mb-4">
-                  <div className="bg-slate-800/50 rounded-lg p-3">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 mb-3 sm:mb-4">
+                  <div className="bg-slate-800/50 rounded-lg p-2 sm:p-3">
                     <div className="text-xs text-slate-500 mb-1">RSI</div>
-                    <div className={`text-lg font-bold ${
+                    <div className={`text-base sm:text-lg font-bold ${
                       reversal.bottom_signal.rsi < 30 ? 'text-green-400' :
                       reversal.bottom_signal.rsi < 40 ? 'text-yellow-400' :
                       'text-slate-400'
@@ -371,9 +371,9 @@ export default function ReversalDetection() {
                       {reversal.bottom_signal.rsi.toFixed(1)}
                     </div>
                   </div>
-                  <div className="bg-slate-800/50 rounded-lg p-3">
+                  <div className="bg-slate-800/50 rounded-lg p-2 sm:p-3">
                     <div className="text-xs text-slate-500 mb-1">vs 20 MA</div>
-                    <div className={`text-lg font-bold ${
+                    <div className={`text-base sm:text-lg font-bold ${
                       reversal.bottom_signal.dist_from_ma20_pct < -10 ? 'text-green-400' :
                       reversal.bottom_signal.dist_from_ma20_pct < 0 ? 'text-yellow-400' :
                       'text-red-400'
@@ -381,27 +381,27 @@ export default function ReversalDetection() {
                       {reversal.bottom_signal.dist_from_ma20_pct.toFixed(1)}%
                     </div>
                   </div>
-                  <div className="bg-slate-800/50 rounded-lg p-3">
+                  <div className="bg-slate-800/50 rounded-lg p-2 sm:p-3">
                     <div className="text-xs text-slate-500 mb-1">Range Pos</div>
-                    <div className="text-lg font-bold text-white">
+                    <div className="text-base sm:text-lg font-bold text-white">
                       {reversal.bottom_signal.position_in_range.toFixed(0)}%
                     </div>
                   </div>
-                  <div className="bg-slate-800/50 rounded-lg p-3">
+                  <div className="bg-slate-800/50 rounded-lg p-2 sm:p-3">
                     <div className="text-xs text-slate-500 mb-1">Volume</div>
-                    <div className="text-lg font-bold text-cyan-400">
+                    <div className="text-base sm:text-lg font-bold text-cyan-400">
                       {reversal.bottom_signal.volume_ratio.toFixed(1)}x
                     </div>
                   </div>
                 </div>
 
                 {/* Recommendation */}
-                <div className={`p-3 rounded-lg mb-3 ${
+                <div className={`p-2 sm:p-3 rounded-lg mb-2 sm:mb-3 ${
                   reversal.bottom_signal.score >= 60 
                     ? 'bg-green-900/30 border border-green-500/30' 
                     : 'bg-blue-900/30 border border-blue-500/30'
                 }`}>
-                  <p className={`text-sm font-semibold ${
+                  <p className={`text-xs sm:text-sm font-semibold ${
                     reversal.bottom_signal.score >= 60 ? 'text-green-300' : 'text-blue-300'
                   }`}>
                     💡 {reversal.bottom_signal.recommendation}
@@ -423,24 +423,24 @@ export default function ReversalDetection() {
 
             {/* Top Signal */}
             {reversal.top_signal && (signalType === 'both' || signalType === 'top') && (
-              <div className="bg-gradient-to-br from-red-900/20 to-slate-900/50 border border-red-500/30 rounded-lg p-5 hover:border-red-500/50 transition">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white font-bold text-lg">
+              <div className="bg-gradient-to-br from-red-900/20 to-slate-900/50 border border-red-500/30 rounded-lg p-3 sm:p-5 hover:border-red-500/50 transition">
+                <div className="flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-0 mb-3 sm:mb-4">
+                  <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                    <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white font-bold text-base sm:text-lg flex-shrink-0">
                       📈
                     </div>
-                    <div>
+                    <div className="flex-1 sm:flex-initial">
                       <Link 
                         href={`/trading?symbol=${reversal.symbol}`}
-                        className="text-2xl font-bold text-white hover:text-red-400 transition"
+                        className="text-xl sm:text-2xl font-bold text-white hover:text-red-400 transition"
                       >
                         {reversal.symbol.replace('USDT', '')}
                       </Link>
                       <p className="text-xs text-slate-400 mt-1">Potential TOP - Sell Warning</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-4xl font-bold text-red-400">
+                  <div className="sm:text-right">
+                    <div className="text-3xl sm:text-4xl font-bold text-red-400">
                       {reversal.top_signal.score.toFixed(0)}
                     </div>
                     <div className="text-xs text-slate-400 mt-1">Score</div>
@@ -448,10 +448,10 @@ export default function ReversalDetection() {
                 </div>
 
                 {/* Metrics */}
-                <div className="grid grid-cols-4 gap-3 mb-4">
-                  <div className="bg-slate-800/50 rounded-lg p-3">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 mb-3 sm:mb-4">
+                  <div className="bg-slate-800/50 rounded-lg p-2 sm:p-3">
                     <div className="text-xs text-slate-500 mb-1">RSI</div>
-                    <div className={`text-lg font-bold ${
+                    <div className={`text-base sm:text-lg font-bold ${
                       reversal.top_signal.rsi > 70 ? 'text-red-400' :
                       reversal.top_signal.rsi > 60 ? 'text-yellow-400' :
                       'text-slate-400'
@@ -459,9 +459,9 @@ export default function ReversalDetection() {
                       {reversal.top_signal.rsi.toFixed(1)}
                     </div>
                   </div>
-                  <div className="bg-slate-800/50 rounded-lg p-3">
+                  <div className="bg-slate-800/50 rounded-lg p-2 sm:p-3">
                     <div className="text-xs text-slate-500 mb-1">vs 20 MA</div>
-                    <div className={`text-lg font-bold ${
+                    <div className={`text-base sm:text-lg font-bold ${
                       reversal.top_signal.dist_from_ma20_pct > 10 ? 'text-red-400' :
                       reversal.top_signal.dist_from_ma20_pct > 0 ? 'text-yellow-400' :
                       'text-green-400'
@@ -469,27 +469,27 @@ export default function ReversalDetection() {
                       +{reversal.top_signal.dist_from_ma20_pct.toFixed(1)}%
                     </div>
                   </div>
-                  <div className="bg-slate-800/50 rounded-lg p-3">
+                  <div className="bg-slate-800/50 rounded-lg p-2 sm:p-3">
                     <div className="text-xs text-slate-500 mb-1">Range Pos</div>
-                    <div className="text-lg font-bold text-white">
+                    <div className="text-base sm:text-lg font-bold text-white">
                       {reversal.top_signal.position_in_range.toFixed(0)}%
                     </div>
                   </div>
-                  <div className="bg-slate-800/50 rounded-lg p-3">
+                  <div className="bg-slate-800/50 rounded-lg p-2 sm:p-3">
                     <div className="text-xs text-slate-500 mb-1">Volume</div>
-                    <div className="text-lg font-bold text-cyan-400">
+                    <div className="text-base sm:text-lg font-bold text-cyan-400">
                       {reversal.top_signal.volume_ratio.toFixed(1)}x
                     </div>
                   </div>
                 </div>
 
                 {/* Recommendation */}
-                <div className={`p-3 rounded-lg mb-3 ${
+                <div className={`p-2 sm:p-3 rounded-lg mb-2 sm:mb-3 ${
                   reversal.top_signal.score >= 60 
                     ? 'bg-red-900/30 border border-red-500/30' 
                     : 'bg-orange-900/30 border border-orange-500/30'
                 }`}>
-                  <p className={`text-sm font-semibold ${
+                  <p className={`text-xs sm:text-sm font-semibold ${
                     reversal.top_signal.score >= 60 ? 'text-red-300' : 'text-orange-300'
                   }`}>
                     ⚠️ {reversal.top_signal.recommendation}
@@ -513,7 +513,7 @@ export default function ReversalDetection() {
       )}
 
       {/* Info Footer */}
-      <div className="mt-6 pt-4 border-t border-slate-700/50">
+      <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-slate-700/50">
         <div className="text-xs text-slate-500 space-y-1">
           <p>📊 <strong>Bottom Signal:</strong> RSI {'<'} 40 + Below 20MA + Low range position + High volume</p>
           <p>📈 <strong>Top Signal:</strong> RSI {'>'} 60 + Above 20MA + High range position + Volume exhaustion</p>

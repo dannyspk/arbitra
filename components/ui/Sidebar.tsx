@@ -7,7 +7,7 @@ const items = [
   { href: '/', label: 'Dashboard', icon: (
     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" d="M3 12h18M3 6h18M3 18h18"/></svg>
   ) },
-  { href: '/opportunities', label: 'Market Overview', icon: (
+  { href: '/opportunities', label: 'Market Signals', icon: (
     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2"/></svg>
   ) },
 { href: '/trading', label: 'Trading', icon: (
