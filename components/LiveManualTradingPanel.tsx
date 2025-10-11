@@ -366,35 +366,30 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
         </div>
       )}
 
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-          <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-6">
+        <h3 className="text-base sm:text-lg font-semibold text-white flex items-center gap-2">
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
           <span className="flex items-center gap-2">
-            Live Manual Trading
-            <span className="px-2 py-0.5 bg-cyan-500/20 border border-cyan-500/30 rounded text-xs text-cyan-400 font-bold">REAL</span>
-            {/* WebSocket Status Indicator */}
-            {liveWsData.connected ? (
-              <span className="px-2 py-0.5 bg-green-500/20 border border-green-500/30 rounded text-xs text-green-400 font-bold flex items-center gap-1">
-                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                WS
-              </span>
-            ) : (
-              <span className="px-2 py-0.5 bg-yellow-500/20 border border-yellow-500/30 rounded text-xs text-yellow-400 font-bold">
-                HTTP
+            <span className="hidden sm:inline">Live Manual Trading</span>
+            <span className="sm:hidden">Live Trading</span>
+            <span className="px-1.5 sm:px-2 py-0.5 bg-cyan-500/20 border border-cyan-500/30 rounded text-xs text-cyan-400 font-bold">REAL</span>
+            {/* WebSocket Status Indicator - Only show when connected */}
+            {liveWsData.connected && (
+              <span className="px-1.5 sm:px-2 py-0.5 bg-green-500/20 border border-green-500/30 rounded text-xs text-green-400 font-bold flex items-center gap-1">                
               </span>
             )}
           </span>
         </h3>
         {balanceInfo ? (
-          <div className="flex flex-col gap-1 bg-cyan-500/10 rounded-lg px-3 py-2 border border-cyan-500/30 min-w-[200px]">
-            <div className="flex items-center justify-between gap-3">
+          <div className="w-full sm:w-auto flex flex-col gap-1 bg-cyan-500/10 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 border border-cyan-500/30 sm:min-w-[200px]">
+            <div className="flex items-center justify-between gap-2 sm:gap-3">
               <span className="text-xs text-cyan-300">Wallet:</span>
               <span className="text-sm font-bold text-cyan-400">${balanceInfo.wallet_balance?.toFixed(2) || '0.00'}</span>
             </div>
             {balanceInfo.unrealized_pnl !== 0 && (
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center justify-between gap-2 sm:gap-3">
                 <span className="text-xs text-cyan-300">Unrealized PNL:</span>
                 <span className={`text-sm font-bold ${balanceInfo.unrealized_pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                   {balanceInfo.unrealized_pnl >= 0 ? '+' : ''}${balanceInfo.unrealized_pnl?.toFixed(2) || '0.00'}
@@ -402,18 +397,18 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
               </div>
             )}
             {balanceInfo.total_fees_paid > 0 && (
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center justify-between gap-2 sm:gap-3">
                 <span className="text-xs text-cyan-300">Fees Paid:</span>
                 <span className="text-sm font-bold text-orange-400">-${balanceInfo.total_fees_paid?.toFixed(4) || '0.00'}</span>
               </div>
             )}
-            <div className="flex items-center justify-between gap-3 pt-1 border-t border-cyan-500/20">
+            <div className="flex items-center justify-between gap-2 sm:gap-3 pt-1 border-t border-cyan-500/20">
               <span className="text-xs text-cyan-300">Available:</span>
               <span className="text-sm font-bold text-cyan-400">${balance.toFixed(2)}</span>
             </div>
           </div>
         ) : (
-          <div className="flex items-center gap-2 bg-cyan-500/10 rounded-lg px-3 py-1 border border-cyan-500/30">
+          <div className="w-full sm:w-auto flex items-center gap-2 bg-cyan-500/10 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 border border-cyan-500/30">
             <span className="text-xs text-cyan-300">Live Balance:</span>
             <span className="text-sm font-bold text-cyan-400">${balance.toFixed(2)}</span>
           </div>
@@ -716,16 +711,7 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
         </div>
       )}
 
-      {/* Status Messages */}
-      {loading && loadingStatus && (
-        <div className="mt-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-4">
-          <div className="flex items-center gap-3">
-            <div className="animate-spin h-5 w-5 border-2 border-cyan-500 border-t-transparent rounded-full"></div>
-            <span className="text-cyan-400 font-medium">{loadingStatus}</span>
-          </div>
-        </div>
-      )}
-
+      {/* Status Messages - Only show errors, not loading states */}
       {error && (
         <div className="mt-4 bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-sm text-red-400">
           ⚠️ {error}

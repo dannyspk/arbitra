@@ -366,19 +366,6 @@ export default function LiveDashboard({ isLiveMode = false, hideSignals = false,
 
   return (
     <div className="space-y-4">
-      {/* WebSocket Connection Status (Live Mode Only) */}
-      {isLiveMode && (
-        <div className={`text-xs px-3 py-2 rounded-lg border flex items-center gap-2 ${
-          liveWsData.connected
-            ? 'bg-green-500/10 border-green-500/30 text-green-400'
-            : 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400'
-        }`}>
-          <div className={`w-2 h-2 rounded-full ${liveWsData.connected ? 'bg-green-500 animate-pulse' : 'bg-yellow-500'}`} />
-          {liveWsData.connected ? '⚡ WebSocket Connected - Real-time updates active' : '📡 Connecting to WebSocket...'}
-          {liveWsData.error && <span className="text-red-400 ml-2">({liveWsData.error})</span>}
-        </div>
-      )}
-
       {/* Strategy Status Bar */}
       {!hideHeader && (
         <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-4 flex items-center justify-between border border-slate-700/50">
