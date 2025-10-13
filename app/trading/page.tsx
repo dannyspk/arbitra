@@ -616,8 +616,280 @@ export default function TradingPage() {
               </div>
             )}
             
-            {/* Order Placement Panel */}
-            <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl md:rounded-2xl shadow-2xl border border-slate-700/50 overflow-visible">
+            {/* Mobile: Order Book + Trading Panel Side by Side (Binance-style) */}
+            <div className="lg:hidden">
+              <div className="flex gap-1 max-h-[calc(100vh-180px)]">
+                {/* Order Book - Left Side (30% width) */}
+                <div className="w-[40%] bg-[#0B0E11] flex flex-col overflow-hidden border-r border-slate-800/50">
+                  {/* Minimal Header */}
+                  <div className="px-2 py-1.5 border-b border-slate-800/30 flex items-center justify-between flex-shrink-0">
+                    <span className="text-[10px] font-medium text-slate-500">Order Book</span>
+                    <span className={`w-1 h-1 rounded-full ${bookConn === 'open' ? 'bg-green-500' : 'bg-slate-600'}`}></span>
+                  </div>
+                  
+                  {/* Order Book Content - Compact like Binance */}
+                  <div className="flex-1 overflow-hidden flex flex-col">
+                    {/* Compact Headers */}
+                    <div className="flex justify-between text-[9px] text-slate-600 font-medium px-2 py-1 flex-shrink-0">
+                      <span>Price(USDT)</span>
+                      <span>Amount</span>
+                    </div>
+                    
+                    {/* Scrollable Order Book */}
+                    <div className="flex-1 overflow-y-auto">
+                      {/* Asks Section - Compact */}
+                      <div className="px-2">
+                        {asks.length === 0 ? (
+                          <div className="text-center text-slate-700 text-[10px] py-6">—</div>
+                        ) : (
+                          asks.slice(0, 8).reverse().map((row, i) => {
+                            const priceNum = parseFloat(row[0])
+                            const amountNum = parseFloat(row[1])
+                            const decimals = priceNum >= 1000 ? 2 : priceNum >= 1 ? 3 : priceNum >= 0.01 ? 5 : 6
+                            
+                            return (
+                              <div key={i} className="flex justify-between items-center py-0.5 hover:bg-slate-800/30 cursor-pointer">
+                                <span className="text-[#F6465D] font-medium text-[11px] tabular-nums">
+                                  {priceNum.toFixed(decimals)}
+                                </span>
+                                <span className="text-slate-500 text-[10px] tabular-nums">
+                                  {amountNum.toFixed(amountNum < 1 ? 4 : 2)}
+                                </span>
+                              </div>
+                            )
+                          })
+                        )}
+                      </div>
+                      
+                      {/* Current Price - Always Show Between Asks/Bids */}
+                      <div className="px-2 py-2 my-2">
+                        <div className="bg-gradient-to-r from-slate-800/60 via-slate-700/60 to-slate-800/60 rounded-md border border-slate-700/50 px-2 py-2 text-center shadow-lg">
+                          {(price || (asks.length > 0 && bids.length > 0)) ? (
+                            <>
+                              <div className="text-[9px] text-slate-400 mb-0.5 font-medium uppercase tracking-wider">Last Price</div>
+                              <div className="text-[15px] font-black text-white tabular-nums tracking-tight">
+                                {(() => {
+                                  // Use price if available, otherwise calculate from spread
+                                  let priceNum = 0
+                                  if (price) {
+                                    priceNum = parseFloat(price)
+                                  } else if (asks.length > 0 && bids.length > 0) {
+                                    const askPrice = parseFloat(asks[0][0] || '0')
+                                    const bidPrice = parseFloat(bids[0][0] || '0')
+                                    priceNum = (askPrice + bidPrice) / 2
+                                  }
+                                  const decimals = priceNum >= 1000 ? 2 : priceNum >= 1 ? 3 : priceNum >= 0.01 ? 5 : 6
+                                  return priceNum.toFixed(decimals)
+                                })()}
+                              </div>
+                              <div className="text-[8px] text-slate-500 mt-0.5 font-semibold">USDT</div>
+                            </>
+                          ) : (
+                            <div className="text-[11px] text-slate-600 py-1">Loading...</div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* Bids Section - Compact */}
+                      <div className="px-2">
+                        {bids.length === 0 ? (
+                          <div className="text-center text-slate-700 text-[10px] py-6">—</div>
+                        ) : (
+                          bids.slice(0, 8).map((row, i) => {
+                            const priceNum = parseFloat(row[0])
+                            const amountNum = parseFloat(row[1])
+                            const decimals = priceNum >= 1000 ? 2 : priceNum >= 1 ? 3 : priceNum >= 0.01 ? 5 : 6
+                            
+                            return (
+                              <div key={i} className="flex justify-between items-center py-0.5 hover:bg-slate-800/30 cursor-pointer">
+                                <span className="text-[#0ECB81] font-medium text-[11px] tabular-nums">
+                                  {priceNum.toFixed(decimals)}
+                                </span>
+                                <span className="text-slate-500 text-[10px] tabular-nums">
+                                  {amountNum.toFixed(amountNum < 1 ? 4 : 2)}
+                                </span>
+                              </div>
+                            )
+                          })
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Trading Panel - Right Side (70% width) */}
+                <div className="w-[70%] bg-[#0B0E11] flex flex-col overflow-hidden">
+                  {/* Mobile Header with Trading Pair Dropdown */}
+                  <div className="px-2 py-1.5 border-b border-slate-800/30 flex-shrink-0 overflow-visible relative z-10">
+                    <div className="flex items-center gap-1.5">
+                      {/* Searchable Symbol Dropdown - Mobile Optimized */}
+                      <div className="relative flex-1 group" ref={dropdownRef}>
+                        <div className="relative">
+                          <input
+                            ref={inputRef}
+                            type="text"
+                            className="w-full px-2 py-1 pr-6 border border-slate-600/50 bg-slate-800/90 rounded text-[11px] font-bold text-white
+                            focus:border-cyan-500 focus:outline-none cursor-pointer"
+                            style={{ fontFamily: "'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace" }}
+                            placeholder={symbol || "Search..."}
+                            value={isDropdownOpen ? searchTerm : symbol}
+                            onChange={(e) => {
+                              setSearchTerm(e.target.value)
+                              if (!isDropdownOpen) setIsDropdownOpen(true)
+                            }}
+                            onClick={handleInputClick}
+                            onKeyDown={handleKeyDown}
+                          />
+                          {/* Dropdown Arrow */}
+                          <div 
+                            className="absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-200"
+                            style={{ transform: `translateY(-50%) ${isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'}` }}
+                          >
+                            <svg className="w-3 h-3 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </div>
+                        </div>
+                        
+                        {/* Dropdown Menu - Mobile Optimized */}
+                        {isDropdownOpen && (
+                          <div className="absolute z-[100] left-0 right-0 mt-1 bg-slate-900 border border-cyan-500/30 rounded-lg shadow-2xl overflow-hidden">
+                            <div className="max-h-[250px] overflow-y-auto">
+                              {filteredSymbols.hot.length === 0 && filteredSymbols.all.length === 0 ? (
+                                <div className="px-3 py-2 text-slate-500 text-center text-[10px]">
+                                  {binanceSymbolsLoading ? 'Loading...' : 'No pairs found'}
+                                </div>
+                              ) : (
+                                <>
+                                  {/* Hot Coins Section */}
+                                  {filteredSymbols.hot.length > 0 && (
+                                    <>
+                                      <div className="px-2 py-1 bg-amber-900/30 border-b border-amber-700/30 sticky top-0 z-10">
+                                        <span className="text-[9px] font-bold text-amber-400 uppercase">🔥 Hot ({filteredSymbols.hot.length})</span>
+                                      </div>
+                                      {filteredSymbols.hot.map((sym, idx) => {
+                                        const globalIdx = idx
+                                        return (
+                                          <div
+                                            key={`hot-mobile-${sym}`}
+                                            className={`px-2 py-1.5 cursor-pointer border-b border-slate-800/50 text-[11px] active:bg-amber-600/40
+                                              ${highlightedIndex === globalIdx || symbol === sym
+                                                ? 'bg-amber-600/25 text-amber-300 font-bold'
+                                                : 'text-white hover:bg-amber-600/15'
+                                              }`}
+                                            style={{ fontFamily: "'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace" }}
+                                            onClick={(e) => {
+                                              e.preventDefault()
+                                              e.stopPropagation()
+                                              handleSelectSymbol(sym)
+                                            }}
+                                            onTouchEnd={(e) => {
+                                              e.preventDefault()
+                                              handleSelectSymbol(sym)
+                                            }}
+                                            onMouseEnter={() => setHighlightedIndex(globalIdx)}
+                                          >
+                                            {sym}
+                                          </div>
+                                        )
+                                      })}
+                                    </>
+                                  )}
+
+                                  {/* All Binance Futures Section */}
+                                  {filteredSymbols.all.length > 0 && (
+                                    <>
+                                      <div className="px-2 py-1 bg-slate-800/50 border-b border-slate-700/30 sticky top-0 z-10">
+                                        <span className="text-[9px] font-bold text-cyan-400 uppercase">📊 All ({filteredSymbols.all.length})</span>
+                                      </div>
+                                      {filteredSymbols.all.map((sym, idx) => {
+                                        const globalIdx = filteredSymbols.hot.length + idx
+                                        return (
+                                          <div
+                                            key={`all-mobile-${sym}`}
+                                            className={`px-2 py-1.5 cursor-pointer border-b border-slate-800/50 text-[11px] last:border-b-0 active:bg-cyan-600/40
+                                              ${highlightedIndex === globalIdx || symbol === sym
+                                                ? 'bg-cyan-600/25 text-cyan-400 font-bold'
+                                                : 'text-white hover:bg-cyan-600/15'
+                                              }`}
+                                            style={{ fontFamily: "'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace" }}
+                                            onClick={(e) => {
+                                              e.preventDefault()
+                                              e.stopPropagation()
+                                              handleSelectSymbol(sym)
+                                            }}
+                                            onTouchEnd={(e) => {
+                                              e.preventDefault()
+                                              handleSelectSymbol(sym)
+                                            }}
+                                            onMouseEnter={() => setHighlightedIndex(globalIdx)}
+                                          >
+                                            {sym}
+                                          </div>
+                                        )
+                                      })}
+                                    </>
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Compact Test/Live Toggle */}
+                      <button
+                        onClick={() => setIsTestMode(!isTestMode)}
+                        className={`px-2 py-1 rounded text-[9px] font-bold whitespace-nowrap ${
+                          isTestMode 
+                            ? 'bg-purple-600/90 text-white' 
+                            : 'bg-green-600/90 text-white'
+                        }`}
+                      >
+                        {isTestMode ? 'TEST' : 'LIVE'}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Trading Panel Content - Compact */}
+                  <div className="flex-1 overflow-y-auto px-1 py-1">
+                    {isTestMode ? (
+                      symbol && asks.length > 0 ? (
+                        <ManualTradingPanel 
+                          symbol={symbol} 
+                          currentPrice={parseFloat(price) || parseFloat(asks[0][0])} 
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <div className="text-center text-slate-600">
+                            <div className="text-2xl mb-1">📊</div>
+                            <p className="text-[10px]">Select symbol</p>
+                          </div>
+                        </div>
+                      )
+                    ) : (
+                      symbol && asks.length > 0 ? (
+                        <LiveManualTradingPanel 
+                          symbol={symbol} 
+                          currentPrice={parseFloat(price) || parseFloat(asks[0][0])}
+                          sharedWsData={liveWsData}
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <div className="text-center text-slate-600">
+                            <div className="text-2xl mb-1">📊</div>
+                            <p className="text-[10px]">Select symbol</p>
+                          </div>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Desktop: Order Placement Panel (Full Width) - Hidden on Mobile */}
+            <div className="hidden lg:block bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl md:rounded-2xl shadow-2xl border border-slate-700/50 overflow-visible">
               <div className="bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 backdrop-blur-sm border-b border-slate-700/50 px-4 md:px-6 py-3 md:py-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-base md:text-lg font-semibold text-white flex items-center gap-2">
@@ -903,7 +1175,8 @@ export default function TradingPage() {
           </div>
 
         <div className="lg:col-span-5 space-y-4">
-          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl md:rounded-2xl shadow-2xl border border-slate-700/50 p-4 md:p-6">
+          {/* Order Book - Desktop Only (Hidden on Mobile) */}
+          <div className="hidden lg:block bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl md:rounded-2xl shadow-2xl border border-slate-700/50 p-4 md:p-6">
             <h3 className="text-base md:text-lg font-semibold text-white mb-4 flex items-center gap-2">
               <svg className="w-4 h-4 md:w-5 md:h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
