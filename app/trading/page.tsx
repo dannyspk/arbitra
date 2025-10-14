@@ -1348,16 +1348,16 @@ export default function TradingPage() {
                   {aiAnalysis['1h']?.analysis && (
                     <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/30">
                       <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Key Indicators</div>
-                      <div className="grid grid-cols-3 gap-3">
-                        <div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div className="flex justify-between sm:block">
                           <div className="text-xs text-slate-500 mb-1">Price</div>
-                          <div className="text-sm font-semibold text-white font-mono">${aiAnalysis['1h'].analysis.last.toFixed(4)}</div>
+                          <div className="text-sm font-semibold text-white font-mono break-all">${aiAnalysis['1h'].analysis.last.toFixed(2)}</div>
                         </div>
-                        <div>
+                        <div className="flex justify-between sm:block">
                           <div className="text-xs text-slate-500 mb-1">SMA(30)</div>
-                          <div className="text-sm font-semibold text-cyan-400 font-mono">${aiAnalysis['1h'].analysis.sma30.toFixed(4)}</div>
+                          <div className="text-sm font-semibold text-cyan-400 font-mono break-all">${aiAnalysis['1h'].analysis.sma30.toFixed(2)}</div>
                         </div>
-                        <div>
+                        <div className="flex justify-between sm:block">
                           <div className="text-xs text-slate-500 mb-1">Volatility</div>
                           <div className="text-sm font-semibold text-amber-400">{aiAnalysis['1h'].analysis.volatility.toFixed(2)}%</div>
                         </div>
