@@ -281,7 +281,7 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-lg shadow-xl border border-cyan-500/30 p-3 lg:p-6">
+    <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-lg shadow-xl border-0 lg:border lg:border-cyan-500/30 p-1.5 lg:p-6">
       {/* Confirmation Modal */}
       {showConfirmation && pendingOrder && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 backdrop-blur-sm">

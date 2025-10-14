@@ -618,11 +618,11 @@ export default function TradingPage() {
             
             {/* Mobile: Order Book + Trading Panel Side by Side (Binance-style) */}
             <div className="lg:hidden">
-              <div className="flex gap-1 max-h-[calc(100vh-180px)]">
-                {/* Order Book - Left Side (30% width) */}
-                <div className="w-[40%] bg-[#0B0E11] flex flex-col overflow-hidden border-r border-slate-800/50">
+              <div className="flex gap-0.5 max-h-[calc(100vh-180px)]">
+                {/* Order Book - Left Side (30% width) - No borders on mobile for more space */}
+                <div className="w-[40%] bg-[#0B0E11] flex flex-col overflow-hidden">
                   {/* Minimal Header */}
-                  <div className="px-3 py-2 border-b border-slate-800/30 flex items-center justify-between flex-shrink-0">
+                  <div className="px-2 py-1.5 flex items-center justify-between flex-shrink-0">
                     <span className="text-xs font-medium text-slate-500">Order Book</span>
                     <span className={`w-1 h-1 rounded-full ${bookConn === 'open' ? 'bg-green-500' : 'bg-slate-600'}`}></span>
                   </div>
@@ -630,7 +630,7 @@ export default function TradingPage() {
                   {/* Order Book Content - Compact like Binance */}
                   <div className="flex-1 overflow-hidden flex flex-col">
                     {/* Compact Headers */}
-                    <div className="flex justify-between text-[10px] text-slate-600 font-medium px-3 py-1.5 flex-shrink-0">
+                    <div className="flex justify-between text-[10px] text-slate-600 font-medium px-2 py-1 flex-shrink-0">
                       <span>Price(USDT)</span>
                       <span>Amount</span>
                     </div>
@@ -638,7 +638,7 @@ export default function TradingPage() {
                     {/* Scrollable Order Book */}
                     <div className="flex-1 overflow-y-auto">
                       {/* Asks Section - Compact */}
-                      <div className="px-3">
+                      <div className="px-2">
                         {asks.length === 0 ? (
                           <div className="text-center text-slate-700 text-xs py-6">—</div>
                         ) : (
@@ -662,8 +662,8 @@ export default function TradingPage() {
                       </div>
                       
                       {/* Current Price - Always Show Between Asks/Bids */}
-                      <div className="px-3 py-2 my-2">
-                        <div className="bg-gradient-to-r from-slate-800/60 via-slate-700/60 to-slate-800/60 rounded-md border border-slate-700/50 px-3 py-2.5 text-center shadow-lg">
+                      <div className="px-2 py-1.5 my-1.5">
+                        <div className="bg-gradient-to-r from-slate-800/60 via-slate-700/60 to-slate-800/60 rounded-md px-2 py-2 text-center shadow-lg">
                           {(price || (asks.length > 0 && bids.length > 0)) ? (
                             <>
                               <div className="text-[10px] text-slate-400 mb-1 font-medium uppercase tracking-wider">Last Price</div>
@@ -691,7 +691,7 @@ export default function TradingPage() {
                       </div>
                       
                       {/* Bids Section - Compact */}
-                      <div className="px-3">
+                      <div className="px-2">
                         {bids.length === 0 ? (
                           <div className="text-center text-slate-700 text-xs py-6">—</div>
                         ) : (
@@ -717,10 +717,10 @@ export default function TradingPage() {
                   </div>
                 </div>
 
-                {/* Trading Panel - Right Side (70% width) */}
-                <div className="w-[70%] bg-[#0B0E11] flex flex-col overflow-hidden">
+                {/* Trading Panel - Right Side (70% width) - No borders on mobile for more space */}
+                <div className="w-[60%] bg-[#0B0E11] flex flex-col overflow-hidden">
                   {/* Mobile Header with Trading Pair Dropdown */}
-                  <div className="px-2 py-1.5 border-b border-slate-800/30 flex-shrink-0 overflow-visible relative z-10">
+                  <div className="px-1.5 py-1.5 flex-shrink-0 overflow-visible relative z-10">
                     <div className="flex items-center gap-1.5">
                       {/* Searchable Symbol Dropdown - Mobile Optimized */}
                       <div className="relative flex-1 group" ref={dropdownRef}>
