@@ -12,10 +12,10 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="space-y-3">
             <div className="text-lg font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-              Arbitra Pro
+              CryptoAIEdge
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Advanced cryptocurrency arbitrage and trading platform with AI-powered analysis.
+              Advanced cryptocurrency trading platform with AI-powered analysis and real-time signals.
             </p>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
@@ -125,7 +125,7 @@ export default function Footer() {
         <div className="pt-4 border-t border-slate-800/50">
           <div className="flex flex-col md:flex-row items-center justify-between gap-3">
             <div className="text-xs text-slate-500">
-              © {currentYear} Arbitra Pro by Cointist. All rights reserved.
+              © {currentYear} CryptoAIEdge. All rights reserved.
             </div>
             
             <div className="flex items-center gap-4 text-xs text-slate-500">

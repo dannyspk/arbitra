@@ -281,7 +281,7 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-lg sm:rounded-1xl shadow-1xl border-1 border-cyan-500/30 p-2 lg:p-6">
+    <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-lg shadow-xl border border-cyan-500/30 p-3 lg:p-6">
       {/* Confirmation Modal */}
       {showConfirmation && pendingOrder && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 backdrop-blur-sm">
@@ -366,37 +366,37 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
         </div>
       )}
 
-      {/* Compact Balance Info for Mobile */}
+      {/* Balance Info - Responsive sizing */}
       {balanceInfo ? (
-        <div className="flex flex-col gap-1 bg-cyan-500/10 rounded-md px-2 py-1.5 border border-cyan-500/30 mb-3 lg:mb-6">
+        <div className="flex flex-col gap-1 lg:gap-2 bg-cyan-500/10 rounded-md px-2 lg:px-4 py-1.5 lg:py-2.5 border border-cyan-500/30 mb-3 lg:mb-6">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-[10px] text-cyan-300">Balance:</span>
-            <span className="text-xs font-bold text-cyan-400">${balance.toFixed(2)}</span>
+            <span className="text-[10px] lg:text-sm text-cyan-300">Balance:</span>
+            <span className="text-xs lg:text-lg font-bold text-cyan-400">${balance.toFixed(2)}</span>
           </div>
           {balanceInfo.unrealized_pnl !== 0 && (
             <div className="flex items-center justify-between gap-2">
-              <span className="text-[10px] text-cyan-300">PNL:</span>
-              <span className={`text-xs font-bold ${balanceInfo.unrealized_pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              <span className="text-[10px] lg:text-sm text-cyan-300">PNL:</span>
+              <span className={`text-xs lg:text-lg font-bold ${balanceInfo.unrealized_pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                 {balanceInfo.unrealized_pnl >= 0 ? '+' : ''}${balanceInfo.unrealized_pnl?.toFixed(2) || '0.00'}
               </span>
             </div>
           )}
         </div>
       ) : (
-        <div className="flex items-center justify-between bg-cyan-500/10 rounded-md px-2 py-1.5 border border-cyan-500/30 mb-3 lg:mb-6">
-          <span className="text-[10px] text-cyan-300">Balance:</span>
-          <span className="text-xs font-bold text-cyan-400">${balance.toFixed(2)}</span>
+        <div className="flex items-center justify-between bg-cyan-500/10 rounded-md px-2 lg:px-4 py-1.5 lg:py-2.5 border border-cyan-500/30 mb-3 lg:mb-6">
+          <span className="text-[10px] lg:text-sm text-cyan-300">Balance:</span>
+          <span className="text-xs lg:text-lg font-bold text-cyan-400">${balance.toFixed(2)}</span>
         </div>
       )}
 
       
 
-      {/* Leverage Slider - Compact for Mobile */}
-      <div className="mb-2 lg:mb-4 bg-slate-800/30 rounded-md p-2 lg:p-3 border border-slate-700/30">
-        <div className="flex items-center justify-between mb-1.5">
-          <label className="text-[10px] lg:text-xs font-semibold text-slate-300">Leverage</label>
-          <div className="bg-cyan-500/20 border border-cyan-500/30 rounded px-2 py-0.5">
-            <span className="text-xs lg:text-sm font-bold text-cyan-400">{leverage}x</span>
+      {/* Leverage Slider - Responsive sizing */}
+      <div className="mb-2 lg:mb-4 bg-slate-800/30 rounded-md p-2 lg:p-4 border border-slate-700/30">
+        <div className="flex items-center justify-between mb-1.5 lg:mb-2">
+          <label className="text-[10px] lg:text-sm font-semibold text-slate-300">Leverage</label>
+          <div className="bg-cyan-500/20 border border-cyan-500/30 rounded px-2 lg:px-3 py-0.5 lg:py-1">
+            <span className="text-xs lg:text-base font-bold text-cyan-400">{leverage}x</span>
           </div>
         </div>
         <input
@@ -406,25 +406,25 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
           step="1"
           value={leverage}
           onChange={(e) => setLeverage(parseInt(e.target.value))}
-          className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+          className="w-full h-1.5 lg:h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
         />
-        <div className="flex justify-between text-[9px] text-slate-500 mt-0.5">
+        <div className="flex justify-between text-[9px] lg:text-xs text-slate-500 mt-0.5 lg:mt-1">
           <span>1x</span>
           <span>5x</span>
           <span>10x</span>
         </div>
       </div>
 
-      {/* Order Size - Extra Compact for Mobile */}
-      <div className="mb-2 lg:mb-4 bg-slate-800/30 rounded-md p-1.5 lg:p-3 border border-slate-700/30">
-        <div className="flex items-center justify-between mb-1">
-          <label className="text-[9px] lg:text-xs font-semibold text-slate-300">Order Size</label>
-          <span className="text-[8px] lg:text-xs text-slate-400">Max: ${maxOrderSize.toFixed(0)}</span>
+      {/* Order Size - Responsive sizing */}
+      <div className="mb-2 lg:mb-4 bg-slate-800/30 rounded-md p-2 lg:p-4 border border-slate-700/30">
+        <div className="flex items-center justify-between mb-1 lg:mb-2">
+          <label className="text-[10px] lg:text-sm font-semibold text-slate-300">Order Size</label>
+          <span className="text-[9px] lg:text-sm text-slate-400">Max: ${maxOrderSize.toFixed(0)}</span>
         </div>
         
-        {/* Compact Input Field */}
+        {/* Input Field */}
         <div className="relative">
-          <span className="absolute left-1.5 top-1/2 transform -translate-y-1/2 text-cyan-400 text-xs lg:text-sm font-bold">$</span>
+          <span className="absolute left-2 lg:left-3 top-1/2 transform -translate-y-1/2 text-cyan-400 text-sm lg:text-lg font-bold">$</span>
           <input
             type="number"
             min="10"
@@ -438,7 +438,7 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
             style={{
               MozAppearance: 'textfield'
             }}
-            className="w-full bg-slate-800 text-white rounded-md pl-5 lg:pl-6 pr-2 py-1 lg:py-2 text-xs lg:text-base font-bold border border-cyan-500/30 focus:outline-none focus:border-cyan-500 transition-colors no-spinner"
+            className="w-full bg-slate-800 text-white rounded-md pl-6 lg:pl-9 pr-2 lg:pr-3 py-1.5 lg:py-2.5 text-sm lg:text-lg font-bold border border-cyan-500/30 focus:outline-none focus:border-cyan-500 transition-colors no-spinner"
             placeholder="0"
           />
           <style jsx>{`
@@ -454,46 +454,46 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
           `}</style>
         </div>
         
-        {/* Compact Quick Amount Buttons */}
-        <div className="grid grid-cols-4 gap-1 mt-1">
+        {/* Quick Amount Buttons */}
+        <div className="grid grid-cols-4 gap-1 lg:gap-2 mt-1.5 lg:mt-2">
           <button
             onClick={() => setOrderSize(Math.min(25, maxOrderSize))}
-            className="bg-slate-700/50 hover:bg-slate-700 text-slate-300 text-[9px] lg:text-[10px] font-semibold py-0.5 lg:py-1.5 rounded transition-colors border border-slate-600/50"
+            className="bg-slate-700/50 hover:bg-slate-700 text-slate-300 text-[9px] lg:text-xs font-semibold py-1 lg:py-2 rounded transition-colors border border-slate-600/50"
           >
             $25
           </button>
           <button
             onClick={() => setOrderSize(Math.min(50, maxOrderSize))}
-            className="bg-slate-700/50 hover:bg-slate-700 text-slate-300 text-[9px] lg:text-[10px] font-semibold py-0.5 lg:py-1.5 rounded transition-colors border border-slate-600/50"
+            className="bg-slate-700/50 hover:bg-slate-700 text-slate-300 text-[9px] lg:text-xs font-semibold py-1 lg:py-2 rounded transition-colors border border-slate-600/50"
           >
             $50
           </button>
           <button
             onClick={() => setOrderSize(Math.min(100, maxOrderSize))}
-            className="bg-slate-700/50 hover:bg-slate-700 text-slate-300 text-[9px] lg:text-[10px] font-semibold py-0.5 lg:py-1.5 rounded transition-colors border border-slate-600/50"
+            className="bg-slate-700/50 hover:bg-slate-700 text-slate-300 text-[9px] lg:text-xs font-semibold py-1 lg:py-2 rounded transition-colors border border-slate-600/50"
           >
             $100
           </button>
           <button
             onClick={() => setOrderSize(maxOrderSize)}
-            className="bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-400 text-[9px] lg:text-[10px] font-semibold py-0.5 lg:py-1.5 rounded transition-colors border border-cyan-500/50"
+            className="bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-400 text-[9px] lg:text-xs font-semibold py-1 lg:py-2 rounded transition-colors border border-cyan-500/50"
           >
             MAX
           </button>
         </div>
         
-        <div className="flex justify-between items-center mt-1 pt-1 border-t border-slate-700/50">
-          <span className="text-[8px] lg:text-[9px] text-slate-500">Position:</span>
-          <span className="text-[8px] lg:text-[10px] font-semibold text-cyan-400">
+        <div className="flex justify-between items-center mt-1.5 lg:mt-2 pt-1.5 lg:pt-2 border-t border-slate-700/50">
+          <span className="text-[9px] lg:text-xs text-slate-500">Position:</span>
+          <span className="text-[10px] lg:text-sm font-semibold text-cyan-400">
             {(orderSize / currentPrice).toFixed(4)} {symbol.replace('USDT', '')}
           </span>
         </div>
       </div>
 
-      {/* Take Profit / Stop Loss - Extra Compact for Mobile */}
-      <div className="grid grid-cols-2 gap-1 lg:gap-3 mb-1.5 lg:mb-4">
-        <div className="bg-green-500/10 rounded p-1.5 lg:p-3 border border-green-500/30">
-          <label className="text-[8px] lg:text-xs font-semibold text-green-400 mb-0.5 block">TP %</label>
+      {/* Take Profit / Stop Loss - Responsive sizing */}
+      <div className="grid grid-cols-2 gap-2 lg:gap-3 mb-2 lg:mb-4">
+        <div className="bg-green-500/10 rounded p-2 lg:p-4 border border-green-500/30">
+          <label className="text-[10px] lg:text-sm font-semibold text-green-400 mb-1 lg:mb-1.5 block">TP %</label>
           <input
             type="number"
             min="0.5"
@@ -501,15 +501,15 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
             step="0.5"
             value={takeProfitPct}
             onChange={(e) => setTakeProfitPct(parseFloat(e.target.value))}
-            className="w-full bg-slate-800 text-white rounded px-1.5 py-0.5 lg:py-1.5 text-[11px] lg:text-xs border border-green-500/30 focus:outline-none focus:border-green-500"
+            className="w-full bg-slate-800 text-white rounded px-2 lg:px-3 py-1 lg:py-2 text-xs lg:text-base border border-green-500/30 focus:outline-none focus:border-green-500"
           />
-          <div className="text-[8px] lg:text-xs text-green-400/70 mt-0.5">
+          <div className="text-[9px] lg:text-sm text-green-400/70 mt-1 lg:mt-1.5">
             ${(currentPrice * (1 + takeProfitPct / 100)).toFixed(2)}
           </div>
         </div>
 
-        <div className="bg-red-500/10 rounded p-1.5 lg:p-3 border border-red-500/30">
-          <label className="text-[8px] lg:text-xs font-semibold text-red-400 mb-0.5 block">SL %</label>
+        <div className="bg-red-500/10 rounded p-2 lg:p-4 border border-red-500/30">
+          <label className="text-[10px] lg:text-sm font-semibold text-red-400 mb-1 lg:mb-1.5 block">SL %</label>
           <input
             type="number"
             min="0.5"
@@ -517,24 +517,24 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
             step="0.5"
             value={stopLossPct}
             onChange={(e) => setStopLossPct(parseFloat(e.target.value))}
-            className="w-full bg-slate-800 text-white rounded px-1.5 py-0.5 lg:py-1.5 text-[11px] lg:text-xs border border-red-500/30 focus:outline-none focus:border-red-500"
+            className="w-full bg-slate-800 text-white rounded px-2 lg:px-3 py-1 lg:py-2 text-xs lg:text-base border border-red-500/30 focus:outline-none focus:border-red-500"
           />
-          <div className="text-[8px] lg:text-xs text-red-400/70 mt-0.5">
+          <div className="text-[9px] lg:text-sm text-red-400/70 mt-1 lg:mt-1.5">
             ${(currentPrice * (1 - stopLossPct / 100)).toFixed(2)}
           </div>
         </div>
       </div>
 
-      {/* Action Buttons - Compact & Clean for Mobile */}
-      <div className="grid grid-cols-2 gap-1.5 lg:gap-3">
+      {/* Action Buttons - Responsive sizing */}
+      <div className="grid grid-cols-2 gap-2 lg:gap-3">
         <button
           onClick={() => handlePlaceOrderClick('long')}
           disabled={loading || balance < 10}
-          className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 disabled:from-slate-700 disabled:to-slate-600 text-white font-bold py-2 lg:py-3 px-2 lg:px-4 rounded-md lg:rounded-lg transition-all duration-200 shadow-lg hover:shadow-green-500/30 disabled:cursor-not-allowed disabled:opacity-50 text-xs lg:text-sm active:scale-95 border border-green-500/20"
+          className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 disabled:from-slate-700 disabled:to-slate-600 text-white font-bold py-2.5 lg:py-3.5 px-3 lg:px-6 rounded-md lg:rounded-lg transition-all duration-200 shadow-lg hover:shadow-green-500/30 disabled:cursor-not-allowed disabled:opacity-50 text-sm lg:text-base active:scale-95 border border-green-500/20"
         >
           <span className="flex items-center justify-center gap-1">
             {loading ? (
-              <span className="inline-block animate-spin rounded-full h-3 w-3 border-b-2 border-white"></span>
+              <span className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
             ) : (
               <>
                 <span className="font-black tracking-wide">LONG</span>
@@ -545,11 +545,11 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
         <button
           onClick={() => handlePlaceOrderClick('short')}
           disabled={loading || balance < 10}
-          className="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 disabled:from-slate-700 disabled:to-slate-600 text-white font-bold py-2 lg:py-3 px-2 lg:px-4 rounded-md lg:rounded-lg transition-all duration-200 shadow-lg hover:shadow-red-500/30 disabled:cursor-not-allowed disabled:opacity-50 text-xs lg:text-sm active:scale-95 border border-red-500/20"
+          className="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 disabled:from-slate-700 disabled:to-slate-600 text-white font-bold py-2.5 lg:py-3.5 px-3 lg:px-6 rounded-md lg:rounded-lg transition-all duration-200 shadow-lg hover:shadow-red-500/30 disabled:cursor-not-allowed disabled:opacity-50 text-sm lg:text-base active:scale-95 border border-red-500/20"
         >
           <span className="flex items-center justify-center gap-1">
             {loading ? (
-              <span className="inline-block animate-spin rounded-full h-3 w-3 border-b-2 border-white"></span>
+              <span className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
             ) : (
               <>
                 <span className="font-black tracking-wide">SHORT</span>

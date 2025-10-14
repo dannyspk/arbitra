@@ -39,13 +39,13 @@ export default function ResponsiveLayout({ children }: { children: React.ReactNo
         transform transition-transform duration-300 ease-in-out
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        <div className="px-4 py-4 border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm">
-          <div className="flex items-center justify-between h6">
+        <div className="px-4 py-3 md:py-4 border-b border-slate-800/50 bg-slate-900/50 backdrop-blur-sm min-h-[10px] md:min-h-[88px] flex items-center">
+          <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-2">
               <img 
-                src="/arbitrage-logo.png" 
-                alt="Arbitras" 
-                className="h-14 w-auto items-center"
+                src="/cryptoai.png" 
+                alt="CryptoAIEdge" 
+                className="h-14 w-auto min-w-[180px] object-contain"
                 onError={(e) => {
                   // Fallback to text if image fails to load
                   const target = e.target as HTMLImageElement;
@@ -58,7 +58,7 @@ export default function ResponsiveLayout({ children }: { children: React.ReactNo
                 className="text-xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(34,211,238,0.3)]"
                 style={{ display: 'none' }}
               >
-                Arbitras
+                CryptoAIEdge
               </span>
             </div>
             {/* Close button for mobile */}

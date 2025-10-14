@@ -184,10 +184,10 @@ export default function Page() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">
-            Arbitra Dashboard
+          <h1 className="text-5xl font-bold text-white">
+            Dashboard
           </h1>
-          <p className="text-slate-400">Real-time market insights and opportunities</p>
+          <p className="text-slate-400 text-lg font-medium">Real-time market insights and opportunities</p>
         </div>
 
         {/* Stats Grid */}

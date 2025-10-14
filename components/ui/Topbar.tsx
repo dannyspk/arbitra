@@ -304,8 +304,8 @@ export default function Topbar() {
         
         {/* Logo */}
         <img 
-          src="/arbitrage-logo.png" 
-          alt="Arbitras" 
+          src="/cryptoai.png" 
+          alt="CryptoAIEdge" 
           className="h-10 sm:h-12 w-auto"
           onError={(e) => {
             // Fallback to text if image fails to load
@@ -319,7 +319,7 @@ export default function Topbar() {
           className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(34,211,238,0.3)]"
           style={{ display: 'none' }}
         >
-          Arbitras
+          CryptoAIEdge
         </span>
       </div>
       {/* Empty spacer for desktop - keeps layout consistent */}

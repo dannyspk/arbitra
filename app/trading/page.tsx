@@ -562,7 +562,7 @@ export default function TradingPage() {
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
               }`}
             >
-              ⚡ Strategies
+              ⚡ AI Strategies
               {activeStrategies.length > 0 && (
                 <span className="ml-2 px-2 py-0.5 bg-green-400/20 text-green-400 rounded-full text-xs font-bold">
                   {activeStrategies.length}
@@ -622,15 +622,15 @@ export default function TradingPage() {
                 {/* Order Book - Left Side (30% width) */}
                 <div className="w-[40%] bg-[#0B0E11] flex flex-col overflow-hidden border-r border-slate-800/50">
                   {/* Minimal Header */}
-                  <div className="px-2 py-1.5 border-b border-slate-800/30 flex items-center justify-between flex-shrink-0">
-                    <span className="text-[10px] font-medium text-slate-500">Order Book</span>
+                  <div className="px-3 py-2 border-b border-slate-800/30 flex items-center justify-between flex-shrink-0">
+                    <span className="text-xs font-medium text-slate-500">Order Book</span>
                     <span className={`w-1 h-1 rounded-full ${bookConn === 'open' ? 'bg-green-500' : 'bg-slate-600'}`}></span>
                   </div>
                   
                   {/* Order Book Content - Compact like Binance */}
                   <div className="flex-1 overflow-hidden flex flex-col">
                     {/* Compact Headers */}
-                    <div className="flex justify-between text-[9px] text-slate-600 font-medium px-2 py-1 flex-shrink-0">
+                    <div className="flex justify-between text-[10px] text-slate-600 font-medium px-3 py-1.5 flex-shrink-0">
                       <span>Price(USDT)</span>
                       <span>Amount</span>
                     </div>
@@ -638,9 +638,9 @@ export default function TradingPage() {
                     {/* Scrollable Order Book */}
                     <div className="flex-1 overflow-y-auto">
                       {/* Asks Section - Compact */}
-                      <div className="px-2">
+                      <div className="px-3">
                         {asks.length === 0 ? (
-                          <div className="text-center text-slate-700 text-[10px] py-6">—</div>
+                          <div className="text-center text-slate-700 text-xs py-6">—</div>
                         ) : (
                           asks.slice(0, 8).reverse().map((row, i) => {
                             const priceNum = parseFloat(row[0])
@@ -648,11 +648,11 @@ export default function TradingPage() {
                             const decimals = priceNum >= 1000 ? 2 : priceNum >= 1 ? 3 : priceNum >= 0.01 ? 5 : 6
                             
                             return (
-                              <div key={i} className="flex justify-between items-center py-0.5 hover:bg-slate-800/30 cursor-pointer">
-                                <span className="text-[#F6465D] font-medium text-[11px] tabular-nums">
+                              <div key={i} className="flex justify-between items-center py-1 hover:bg-slate-800/30 cursor-pointer">
+                                <span className="text-[#F6465D] font-medium text-xs tabular-nums">
                                   {priceNum.toFixed(decimals)}
                                 </span>
-                                <span className="text-slate-500 text-[10px] tabular-nums">
+                                <span className="text-slate-500 text-[11px] tabular-nums">
                                   {amountNum.toFixed(amountNum < 1 ? 4 : 2)}
                                 </span>
                               </div>
@@ -662,12 +662,12 @@ export default function TradingPage() {
                       </div>
                       
                       {/* Current Price - Always Show Between Asks/Bids */}
-                      <div className="px-2 py-2 my-2">
-                        <div className="bg-gradient-to-r from-slate-800/60 via-slate-700/60 to-slate-800/60 rounded-md border border-slate-700/50 px-2 py-2 text-center shadow-lg">
+                      <div className="px-3 py-2 my-2">
+                        <div className="bg-gradient-to-r from-slate-800/60 via-slate-700/60 to-slate-800/60 rounded-md border border-slate-700/50 px-3 py-2.5 text-center shadow-lg">
                           {(price || (asks.length > 0 && bids.length > 0)) ? (
                             <>
-                              <div className="text-[9px] text-slate-400 mb-0.5 font-medium uppercase tracking-wider">Last Price</div>
-                              <div className="text-[15px] font-black text-white tabular-nums tracking-tight">
+                              <div className="text-[10px] text-slate-400 mb-1 font-medium uppercase tracking-wider">Last Price</div>
+                              <div className="text-lg font-black text-white tabular-nums tracking-tight">
                                 {(() => {
                                   // Use price if available, otherwise calculate from spread
                                   let priceNum = 0
@@ -682,18 +682,18 @@ export default function TradingPage() {
                                   return priceNum.toFixed(decimals)
                                 })()}
                               </div>
-                              <div className="text-[8px] text-slate-500 mt-0.5 font-semibold">USDT</div>
+                              <div className="text-[9px] text-slate-500 mt-1 font-semibold">USDT</div>
                             </>
                           ) : (
-                            <div className="text-[11px] text-slate-600 py-1">Loading...</div>
+                            <div className="text-xs text-slate-600 py-1">Loading...</div>
                           )}
                         </div>
                       </div>
                       
                       {/* Bids Section - Compact */}
-                      <div className="px-2">
+                      <div className="px-3">
                         {bids.length === 0 ? (
-                          <div className="text-center text-slate-700 text-[10px] py-6">—</div>
+                          <div className="text-center text-slate-700 text-xs py-6">—</div>
                         ) : (
                           bids.slice(0, 8).map((row, i) => {
                             const priceNum = parseFloat(row[0])
@@ -701,11 +701,11 @@ export default function TradingPage() {
                             const decimals = priceNum >= 1000 ? 2 : priceNum >= 1 ? 3 : priceNum >= 0.01 ? 5 : 6
                             
                             return (
-                              <div key={i} className="flex justify-between items-center py-0.5 hover:bg-slate-800/30 cursor-pointer">
-                                <span className="text-[#0ECB81] font-medium text-[11px] tabular-nums">
+                              <div key={i} className="flex justify-between items-center py-1 hover:bg-slate-800/30 cursor-pointer">
+                                <span className="text-[#0ECB81] font-medium text-xs tabular-nums">
                                   {priceNum.toFixed(decimals)}
                                 </span>
-                                <span className="text-slate-500 text-[10px] tabular-nums">
+                                <span className="text-slate-500 text-[11px] tabular-nums">
                                   {amountNum.toFixed(amountNum < 1 ? 4 : 2)}
                                 </span>
                               </div>
@@ -1175,36 +1175,6 @@ export default function TradingPage() {
           </div>
 
         <div className="lg:col-span-5 space-y-4">
-          {/* Order Book - Desktop Only (Hidden on Mobile) */}
-          <div className="hidden lg:block bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl md:rounded-2xl shadow-2xl border border-slate-700/50 p-4 md:p-6">
-            <h3 className="text-base md:text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <svg className="w-4 h-4 md:w-5 md:h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <span className="truncate">Order Book {symbol ? `(${symbol} · ${market})` : ''}</span>
-            </h3>
-            <div className="text-xs text-slate-500 mb-2">Updated: {bookTs || '—'}</div>
-            <div className="text-xs text-slate-500 mb-4">WS: <span className={`font-semibold ${bookConn === 'open' ? 'text-green-400' : 'text-red-400'}`}>{bookConn}</span></div>
-            <div className="grid grid-cols-2 gap-2 md:gap-4">
-              <div>
-                <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Asks</div>
-                <div className="text-xs md:text-sm font-mono max-h-48 overflow-auto space-y-1">
-                  {asks.length === 0 ? <div className="text-slate-600">No asks</div> : asks.slice().reverse().map((row, i) => (
-                    <div key={i} className="flex justify-between px-1 md:px-2 py-1 bg-red-500/5 hover:bg-red-500/10 rounded transition"><span className="text-red-400 font-semibold">{row[0]}</span><span className="text-slate-400">{row[1]}</span></div>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Bids</div>
-                <div className="text-xs md:text-sm font-mono max-h-48 overflow-auto space-y-1">
-                  {bids.length === 0 ? <div className="text-slate-600">No bids</div> : bids.map((row, i) => (
-                    <div key={i} className="flex justify-between px-1 md:px-2 py-1 bg-green-500/5 hover:bg-green-500/10 rounded transition"><span className="text-green-400 font-semibold">{row[0]}</span><span className="text-slate-400">{row[1]}</span></div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* AI Analysis Section */}
           {symbol && (
             <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl md:rounded-2xl shadow-2xl border border-slate-700/50 p-4 md:p-6">
@@ -1399,6 +1369,36 @@ export default function TradingPage() {
             </div>
           )}
 
+          {/* Order Book - Desktop Only (Hidden on Mobile) - Below AI Analysis */}
+          <div className="hidden lg:block bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl md:rounded-2xl shadow-2xl border border-slate-700/50 p-4 md:p-6">
+            <h3 className="text-base md:text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <svg className="w-4 h-4 md:w-5 md:h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span className="truncate">Order Book {symbol ? `(${symbol} · ${market})` : ''}</span>
+            </h3>
+            <div className="text-xs text-slate-500 mb-2">Updated: {bookTs || '—'}</div>
+            <div className="text-xs text-slate-500 mb-4">WS: <span className={`font-semibold ${bookConn === 'open' ? 'text-green-400' : 'text-red-400'}`}>{bookConn}</span></div>
+            <div className="grid grid-cols-2 gap-2 md:gap-4">
+              <div>
+                <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Asks</div>
+                <div className="text-xs md:text-sm font-mono max-h-48 overflow-auto space-y-1">
+                  {asks.length === 0 ? <div className="text-slate-600">No asks</div> : asks.slice().reverse().map((row, i) => (
+                    <div key={i} className="flex justify-between px-1 md:px-2 py-1 bg-red-500/5 hover:bg-red-500/10 rounded transition"><span className="text-red-400 font-semibold">{row[0]}</span><span className="text-slate-400">{row[1]}</span></div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Bids</div>
+                <div className="text-xs md:text-sm font-mono max-h-48 overflow-auto space-y-1">
+                  {bids.length === 0 ? <div className="text-slate-600">No bids</div> : bids.map((row, i) => (
+                    <div key={i} className="flex justify-between px-1 md:px-2 py-1 bg-green-500/5 hover:bg-green-500/10 rounded transition"><span className="text-green-400 font-semibold">{row[0]}</span><span className="text-slate-400">{row[1]}</span></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Social Sentiment Analysis */}
           {symbol && (
             <div className="mb-4 mt-4">
@@ -1406,7 +1406,7 @@ export default function TradingPage() {
             </div>
           )}
 
-          {/* Spacing between AI Analysis and Funding Rate sections */}
+          {/* Spacing between sections */}
           <div className="mb-8"></div>
 
           <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 p-6">
