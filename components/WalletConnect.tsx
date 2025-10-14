@@ -410,12 +410,12 @@ export default function WalletConnect({
     // Connected state - show wallet info
     return (
       <div className="flex items-center gap-2 sm:gap-3">
-        <div className="bg-slate-800 border border-slate-700 rounded-lg px-2 sm:px-4 py-1.5 sm:py-2 flex items-center gap-2 sm:gap-3">
+        <div className="bg-[#3d4752] border border-slate-600/50 rounded-lg px-2 sm:px-4 py-1.5 sm:py-2 flex items-center gap-2 sm:gap-3 shadow-md">
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span className="text-xs sm:text-sm text-slate-400 hidden sm:inline">{getChainName(chainId)}</span>
+            <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse shadow-sm shadow-emerald-400/50"></div>
+            <span className="text-xs sm:text-sm text-slate-300 hidden sm:inline">{getChainName(chainId)}</span>
           </div>
-          <div className="h-4 w-px bg-slate-700 hidden sm:block"></div>
+          <div className="h-4 w-px bg-slate-600 hidden sm:block"></div>
           <div className="flex items-center gap-1.5 sm:gap-2">
             {getWalletIcon()}
             <span className="text-xs sm:text-sm font-mono text-white">{formatAddress(address)}</span>
@@ -454,16 +454,16 @@ export default function WalletConnect({
       {/* Wallet Selection Modal */}
       {mounted && showModal && createPortal(
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 overflow-y-auto">
-          <div className="bg-slate-800 rounded-xl border border-slate-700 max-w-md w-full p-6 relative z-[10000] my-auto shadow-2xl">
+          <div className="bg-[#3d4752] rounded-xl border border-slate-600/50 max-w-md w-full p-6 relative z-[10000] my-auto shadow-2xl">
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-sm font-bold text-white">Connect Wallet</h2>
+              <h2 className="text-xl font-bold text-white">Connect Wallet</h2>
               <button
                 onClick={() => {
                   setShowModal(false)
                   setError(null)
                 }}
-                className="text-slate-400 hover:text-white transition-colors"
+                className="text-slate-400 hover:text-white transition-colors p-1 hover:bg-slate-700/50 rounded-lg"
               >
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -471,7 +471,7 @@ export default function WalletConnect({
               </button>
             </div>
 
-            <p className="text-slate-400 text-sm mb-6">
+            <p className="text-slate-300 text-sm mb-6">
               Connect your wallet to track positions and monitor your DeFi yields
             </p>
 
@@ -514,7 +514,7 @@ export default function WalletConnect({
               <button
                 onClick={connectMetaMask}
                 disabled={isConnecting}
-                className="w-full p-4 bg-slate-900 hover:bg-slate-700 border border-slate-700 hover:border-emerald-500/50 rounded-lg transition-all flex items-center justify-between group"
+                className="w-full p-4 bg-[#2a3341] hover:bg-slate-700 border border-slate-600/50 hover:border-emerald-500/50 rounded-lg transition-all flex items-center justify-between group"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-yellow-500 rounded-lg flex items-center justify-center">
@@ -536,7 +536,7 @@ export default function WalletConnect({
               <button
                 onClick={connectWalletConnect}
                 disabled={isConnecting}
-                className="w-full p-4 bg-slate-900 hover:bg-slate-700 border border-slate-700 hover:border-blue-500/50 rounded-lg transition-all flex items-center justify-between group opacity-50 cursor-not-allowed"
+                className="w-full p-4 bg-[#2a3341] hover:bg-slate-700 border border-slate-600/50 hover:border-blue-500/50 rounded-lg transition-all flex items-center justify-between group opacity-50 cursor-not-allowed"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
@@ -555,7 +555,7 @@ export default function WalletConnect({
               <button
                 onClick={connectCoinbase}
                 disabled={isConnecting}
-                className="w-full p-4 bg-slate-900 hover:bg-slate-700 border border-slate-700 hover:border-blue-500/50 rounded-lg transition-all flex items-center justify-between group"
+                className="w-full p-4 bg-[#2a3341] hover:bg-slate-700 border border-slate-600/50 hover:border-blue-500/50 rounded-lg transition-all flex items-center justify-between group"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-400 rounded-lg flex items-center justify-center">
@@ -575,14 +575,14 @@ export default function WalletConnect({
             </div>
 
             {/* Info */}
-            <div className="mt-6 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-              <div className="flex items-start gap-2 text-sm text-blue-300">
+            <div className="mt-6 p-3 bg-teal-500/10 border border-teal-500/30 rounded-lg">
+              <div className="flex items-start gap-2 text-sm text-teal-300">
                 <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div>
                   <strong>Safe & Secure</strong>
-                  <p className="text-xs text-blue-400/80 mt-1">We never store your private keys. Your wallet stays in your control.</p>
+                  <p className="text-xs text-teal-400/80 mt-1">We never store your private keys. Your wallet stays in your control.</p>
                 </div>
               </div>
             </div>

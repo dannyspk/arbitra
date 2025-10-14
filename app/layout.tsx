@@ -9,8 +9,8 @@ const TopbarClient = dynamic(() => import('../components/ui/TopbarClient'), { ss
 const ClientShell = dynamic(() => import('../components/ClientShell'), { ssr: false })
 
 export const metadata = {
-  title: 'Arbitrage Dashboard',
-  description: 'Live arbitrage opportunities',
+  title: 'CryptoAIEdge - AI-Powered Crypto Trading',
+  description: 'Advanced cryptocurrency trading with AI-powered signals and real-time analysis',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <WalletProvider>
           <ResponsiveLayout>
             <ClientShell>
-              <header className="px-4 md:px-6 py-3 md:py-4 border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm min-h-[10px] md:min-h-[88px] flex items-center">
+              <header className="px-4 md:px-6 py-3 md:py-4 bg-[#3d4752] backdrop-blur-sm min-h-[10px] md:min-h-[88px] flex items-center">
                 <div className="w-full">
                   <TopbarClient />
                 </div>

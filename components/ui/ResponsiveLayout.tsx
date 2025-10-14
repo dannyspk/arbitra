@@ -34,18 +34,18 @@ export default function ResponsiveLayout({ children }: { children: React.ReactNo
       {/* Sidebar */}
       <aside className={`
         fixed lg:static inset-y-0 left-0 z-50
-        w-60 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 
-        border-r border-slate-800/50 shadow-2xl shadow-slate-950/50
+        w-60 bg-gradient-to-b from-white/90 via-white/85 to-white/80 backdrop-blur-xl
+        border-r border-white/40 shadow-2xl shadow-slate-900/10
         transform transition-transform duration-300 ease-in-out
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        <div className="px-4 py-4 border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm">
+        <div className="px-4 py-3 border-b border-white/40">
           <div className="flex items-center justify-between h6">
-            <div className="flex items-center gap-2">
+            <div className="flex-1 flex items-center pr-3">
               <img 
-                src="/arbitrage-logo.png" 
-                alt="Arbitras" 
-                className="h-14 w-auto items-center"
+                src="/cryptoai.png" 
+                alt="CryptoAIEdge" 
+                className="h-16 lg:h-16 w-auto min-w-[180px] object-contain"
                 onError={(e) => {
                   // Fallback to text if image fails to load
                   const target = e.target as HTMLImageElement;
@@ -55,18 +55,18 @@ export default function ResponsiveLayout({ children }: { children: React.ReactNo
                 }}
               />
               <span 
-                className="text-xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(34,211,238,0.3)]"
+                className="text-xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-600 bg-clip-text text-transparent drop-shadow-sm"
                 style={{ display: 'none' }}
               >
-                Arbitras
+                CryptoAIEdge
               </span>
             </div>
             {/* Close button for mobile */}
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden text-slate-400 hover:text-white transition-colors p-1"
+              className="lg:hidden text-slate-600 hover:text-slate-900 transition-colors p-1 flex-shrink-0 hover:bg-slate-100 rounded-lg"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>

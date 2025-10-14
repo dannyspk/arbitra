@@ -39,7 +39,7 @@ const items = [
 export default function Sidebar() {
   const pathname = usePathname() || '/'
   return (
-    <nav className="p-4 overflow-y-auto h-[calc(100vh-73px)] bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 scrollbar-hide">
+    <nav className="p-4 overflow-y-auto h-[calc(100vh-73px)] scrollbar-hide">
       <ul className="space-y-2">
         {items.map((it) => {
           const active = pathname === it.href || (it.href !== '/' && pathname.startsWith(it.href))
@@ -49,27 +49,27 @@ export default function Sidebar() {
                 href={it.href} 
                 className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 group relative overflow-hidden ${
                   active 
-                    ? 'bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-purple-500/20 text-white border border-cyan-500/40 shadow-lg shadow-cyan-500/20' 
-                    : 'text-slate-400 hover:text-white hover:bg-gradient-to-r hover:from-slate-800/80 hover:to-slate-800/50 border border-slate-700/30 hover:border-slate-600/50 hover:shadow-md hover:shadow-slate-700/20'
+                    ? 'bg-gradient-to-r from-teal-500/20 to-cyan-500/20 text-slate-900 border border-teal-400/50 shadow-lg shadow-teal-500/20' 
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 border border-slate-200/50 hover:border-teal-300/50 hover:shadow-md hover:shadow-slate-200/50'
                 }`}
               >
                 {active && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 animate-pulse"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-teal-400/10 to-cyan-400/10 animate-pulse"></div>
                 )}
                 <span className={`relative z-10 transition-all duration-300 ${
                   active 
-                    ? 'text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]' 
-                    : 'text-slate-500 group-hover:text-slate-300'
+                    ? 'text-teal-600 drop-shadow-sm' 
+                    : 'text-slate-500 group-hover:text-teal-600'
                 }`}>
                   {it.icon}
                 </span>
                 <span className={`relative z-10 font-medium transition-all duration-300 ${
-                  active ? 'text-white' : 'group-hover:text-white'
+                  active ? 'text-slate-900 font-semibold' : 'group-hover:text-slate-900'
                 }`}>
                   {it.label}
                 </span>
                 {active && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-cyan-400 to-blue-500 rounded-r-full shadow-lg shadow-cyan-500/50"></div>
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-teal-500 to-cyan-600 rounded-r-full shadow-lg shadow-teal-500/50"></div>
                 )}
               </Link>
             </li>
