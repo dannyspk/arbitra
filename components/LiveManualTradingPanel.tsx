@@ -490,10 +490,10 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
         </div>
       </div>
 
-      {/* Take Profit / Stop Loss - Responsive sizing */}
-      <div className="grid grid-cols-2 gap-2 lg:gap-3 mb-2 lg:mb-4">
-        <div className="bg-green-500/10 rounded p-2 lg:p-4 border border-green-500/30">
-          <label className="text-[10px] lg:text-sm font-semibold text-green-400 mb-1 lg:mb-1.5 block">TP %</label>
+      {/* Take Profit / Stop Loss - More compact on mobile */}
+      <div className="grid grid-cols-2 gap-1 lg:gap-3 mb-1.5 lg:mb-4">
+        <div className="bg-green-500/10 rounded p-1.5 lg:p-4 border border-green-500/30">
+          <label className="text-[9px] lg:text-sm font-semibold text-green-400 mb-0.5 lg:mb-1.5 block">TP %</label>
           <input
             type="number"
             min="0.5"
@@ -501,15 +501,15 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
             step="0.5"
             value={takeProfitPct}
             onChange={(e) => setTakeProfitPct(parseFloat(e.target.value))}
-            className="w-full bg-slate-800 text-white rounded px-2 lg:px-3 py-1 lg:py-2 text-xs lg:text-base border border-green-500/30 focus:outline-none focus:border-green-500"
+            className="w-full bg-slate-800 text-white rounded px-1.5 lg:px-3 py-0.5 lg:py-2 text-[11px] lg:text-base border border-green-500/30 focus:outline-none focus:border-green-500"
           />
-          <div className="text-[9px] lg:text-sm text-green-400/70 mt-1 lg:mt-1.5">
+          <div className="text-[8px] lg:text-sm text-green-400/70 mt-0.5 lg:mt-1.5">
             ${(currentPrice * (1 + takeProfitPct / 100)).toFixed(2)}
           </div>
         </div>
 
-        <div className="bg-red-500/10 rounded p-2 lg:p-4 border border-red-500/30">
-          <label className="text-[10px] lg:text-sm font-semibold text-red-400 mb-1 lg:mb-1.5 block">SL %</label>
+        <div className="bg-red-500/10 rounded p-1.5 lg:p-4 border border-red-500/30">
+          <label className="text-[9px] lg:text-sm font-semibold text-red-400 mb-0.5 lg:mb-1.5 block">SL %</label>
           <input
             type="number"
             min="0.5"
@@ -517,24 +517,24 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
             step="0.5"
             value={stopLossPct}
             onChange={(e) => setStopLossPct(parseFloat(e.target.value))}
-            className="w-full bg-slate-800 text-white rounded px-2 lg:px-3 py-1 lg:py-2 text-xs lg:text-base border border-red-500/30 focus:outline-none focus:border-red-500"
+            className="w-full bg-slate-800 text-white rounded px-1.5 lg:px-3 py-0.5 lg:py-2 text-[11px] lg:text-base border border-red-500/30 focus:outline-none focus:border-red-500"
           />
-          <div className="text-[9px] lg:text-sm text-red-400/70 mt-1 lg:mt-1.5">
+          <div className="text-[8px] lg:text-sm text-red-400/70 mt-0.5 lg:mt-1.5">
             ${(currentPrice * (1 - stopLossPct / 100)).toFixed(2)}
           </div>
         </div>
       </div>
 
-      {/* Action Buttons - Responsive sizing */}
-      <div className="grid grid-cols-2 gap-2 lg:gap-3">
+      {/* Action Buttons - More compact on mobile */}
+      <div className="grid grid-cols-2 gap-1 lg:gap-3">
         <button
           onClick={() => handlePlaceOrderClick('long')}
           disabled={loading || balance < 10}
-          className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 disabled:from-slate-700 disabled:to-slate-600 text-white font-bold py-2.5 lg:py-3.5 px-3 lg:px-6 rounded-md lg:rounded-lg transition-all duration-200 shadow-lg hover:shadow-green-500/30 disabled:cursor-not-allowed disabled:opacity-50 text-sm lg:text-base active:scale-95 border border-green-500/20"
+          className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 disabled:from-slate-700 disabled:to-slate-600 text-white font-bold py-1.5 lg:py-3.5 px-2 lg:px-6 rounded lg:rounded-lg transition-all duration-200 shadow-lg hover:shadow-green-500/30 disabled:cursor-not-allowed disabled:opacity-50 text-[11px] lg:text-base active:scale-95 border border-green-500/20"
         >
-          <span className="flex items-center justify-center gap-1">
+          <span className="flex items-center justify-center gap-0.5">
             {loading ? (
-              <span className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+              <span className="inline-block animate-spin rounded-full h-3 w-3 lg:h-4 lg:w-4 border-b-2 border-white"></span>
             ) : (
               <>
                 <span className="font-black tracking-wide">LONG</span>
@@ -545,11 +545,11 @@ export default function LiveManualTradingPanel({ symbol, currentPrice, sharedWsD
         <button
           onClick={() => handlePlaceOrderClick('short')}
           disabled={loading || balance < 10}
-          className="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 disabled:from-slate-700 disabled:to-slate-600 text-white font-bold py-2.5 lg:py-3.5 px-3 lg:px-6 rounded-md lg:rounded-lg transition-all duration-200 shadow-lg hover:shadow-red-500/30 disabled:cursor-not-allowed disabled:opacity-50 text-sm lg:text-base active:scale-95 border border-red-500/20"
+          className="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 disabled:from-slate-700 disabled:to-slate-600 text-white font-bold py-1.5 lg:py-3.5 px-2 lg:px-6 rounded lg:rounded-lg transition-all duration-200 shadow-lg hover:shadow-red-500/30 disabled:cursor-not-allowed disabled:opacity-50 text-[11px] lg:text-base active:scale-95 border border-red-500/20"
         >
-          <span className="flex items-center justify-center gap-1">
+          <span className="flex items-center justify-center gap-0.5">
             {loading ? (
-              <span className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+              <span className="inline-block animate-spin rounded-full h-3 w-3 lg:h-4 lg:w-4 border-b-2 border-white"></span>
             ) : (
               <>
                 <span className="font-black tracking-wide">SHORT</span>
